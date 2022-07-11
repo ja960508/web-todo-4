@@ -16,6 +16,8 @@ module.exports = {
 		// 기존 빌드 결과 제거
 	},
 
+	devtool: 'eval-cheap-source-map',
+
 	module: {
 		rules: [
 			{
