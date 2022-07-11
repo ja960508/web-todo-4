@@ -1,14 +1,16 @@
 // const path = require("path");
 const HtmlPlugin = require('html-webpack-plugin');
+const path = require('path');
 
 module.exports = {
 	// 파일을 읽어들이는 진입점 설정
+
 	entry: './src/js/index.js',
 
 	// 결과물 반환 옵션
 	output: {
 		// 기본은 path dist, filename main.js
-		// path: path.resolve(__dirname, "dist"),
+		path: path.resolve(__dirname, 'dist'),
 		filename: 'index.js',
 		clean: true,
 		// 기존 빌드 결과 제거
@@ -24,10 +26,6 @@ module.exports = {
 			{
 				test: /\.js$/,
 				use: ['babel-loader'],
-			},
-			{
-				test: /\.html$/,
-				use: ['html-loader'],
 			},
 		],
 	},
