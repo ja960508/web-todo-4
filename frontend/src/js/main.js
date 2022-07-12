@@ -1,11 +1,9 @@
-console.log('hello');
+(function () {
+	const $menu = document.querySelector('.header .menu');
+	const $container = document.querySelector('.todo-container');
+	const $log = document.querySelector('.todo-log');
 
-export const onClick = () => {
-	console.log('btn clicked');
-};
-
-const sayHello = () => {
-	console.log('bye');
-};
-
-sayHello();
+	$menu.addEventListener('click', () => {
+		$log.style.visibility = 'visible';
+	});
+})();
