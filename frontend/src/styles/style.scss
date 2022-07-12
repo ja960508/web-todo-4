@@ -54,3 +54,24 @@ button {
 		}
 	}
 }
+
+.log {
+	position: absolute;
+	top: 0;
+	right: 0;
+	background-color: lightblue;
+	height: 100vh;
+	visibility: hidden;
+
+	header {
+		text-align: right;
+	}
+
+	ul {
+		li {
+			padding: 1rem;
+			margin-bottom: 0.5rem;
+			border: 1px solid black;
+		}
+	}
+}
