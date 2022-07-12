@@ -4,6 +4,9 @@
 
 body {
 	margin: 0;
+	user-select: none;
+	max-width: 1600px;
+	margin: 0 auto;
 }
 
 ul {
@@ -24,7 +27,7 @@ button {
 	border: 1px solid red;
 }
 
-.container {
+.todo-container {
 	display: flex;
 	gap: 1rem;
 
@@ -55,7 +58,7 @@ button {
 	}
 }
 
-.log {
+.todo-log {
 	position: absolute;
 	top: 0;
 	right: 0;
