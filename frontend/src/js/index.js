@@ -1,6 +1,4 @@
 import { onClick } from './main';
-import css from '../styles/style.css';
-
-document.querySelector('.btn').addEventListener('click', onClick);
+import css from '../styles/style.scss';
 
 console.log('heelo');
