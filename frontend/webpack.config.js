@@ -1,5 +1,6 @@
 // const path = require("path");
 const HtmlPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
 
 module.exports = {
@@ -21,13 +22,21 @@ module.exports = {
 	module: {
 		rules: [
 			{
-				test: /\.css$/,
-				use: ['style-loader', 'css-loader'],
+				test: /\.s[ac]ss$/i,
+				use: [
+					{
+						loader: MiniCssExtractPlugin.loader,
+					},
+					'css-loader',
+					'sass-loader',
+				],
+				exclude: /node_modules/,
 				// 순서 중요, 뒤에서부터 로드
 			},
 			{
 				test: /\.js$/,
 				use: ['babel-loader'],
+				exclude: /node_modules/,
 			},
 		],
 	},
@@ -37,5 +46,6 @@ module.exports = {
 		new HtmlPlugin({
 			template: './index.html',
 		}),
+		new MiniCssExtractPlugin({ filename: 'css/style.css' }),
 	],
 };
