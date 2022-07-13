@@ -1,4 +1,6 @@
 import Component from '../../core/component';
+import logData2Desc from '../../utils/logTypeMap';
+import timeDiff from '../../utils/timeDiff';
 
 class TodoLog extends Component {
 	constructor(...data) {
@@ -6,13 +8,14 @@ class TodoLog extends Component {
 	}
 
 	template() {
+		const { type, date } = this.props.logData;
 		return `<div>Avatar</div>
     <div class="log__content">
       <div>@sam</div>
       <div>
-        HTML/CSS공부하기를 해야할 일에서 하고 있는 일로 이동하였습니다.
+      	${logData2Desc[type](this.props.logData)}
       </div>
-      <div>1분 전</div>
+      <div>${timeDiff({ date })}</div>
     </div>`;
 	}
 }
