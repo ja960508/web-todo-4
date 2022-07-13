@@ -13,6 +13,7 @@ class TodoColumn extends Component {
 		new TodoColumnHeader('header', this.$target, {
 			title,
 			count: todos.length,
+			showTodoAddForm: this.props.showTodoAddForm,
 		});
 		new TodoList('ul', this.$target, {
 			todos: todos,
