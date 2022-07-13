@@ -26,9 +26,9 @@ class TodoLogContainer extends Component {
 
 		this.state.logData &&
 			this.state.logData.forEach(
-				(key) =>
+				(item) =>
 					new TodoLog('li', this.$target, {
-						logData: this.state.logData[key],
+						logData: item,
 					})
 			);
 	}

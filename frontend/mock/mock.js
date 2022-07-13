@@ -75,7 +75,7 @@ export const logData = [
 		toDoTitle: '밥먹기',
 		toDoColumnId: 1,
 		nextToDoColumnId: null,
-		date: new Date(),
+		date: new Date('2022-07-11T03:24:00'),
 	},
 	{
 		id: 3,
