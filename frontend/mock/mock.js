@@ -58,4 +58,52 @@ const processedData = {
 	},
 };
 
+export const logData = [
+	{
+		id: 1,
+		type: 'move',
+		userName: '한진탁',
+		toDoTitle: '코딩하기',
+		toDoColumnId: 1,
+		nextToDoColumnId: 2,
+		date: new Date(),
+	},
+	{
+		id: 2,
+		type: 'remove',
+		userName: '이주암',
+		toDoTitle: '밥먹기',
+		toDoColumnId: 1,
+		nextToDoColumnId: null,
+		date: new Date(),
+	},
+	{
+		id: 3,
+		type: 'add',
+		userName: '한진탁',
+		toDoTitle: '운동하기',
+		toDoColumnId: 1,
+		nextToDoColumnId: null,
+		date: new Date(),
+	},
+	{
+		id: 4,
+		type: 'move',
+		userName: '이주암',
+		toDoTitle: '공부하기',
+		toDoColumnId: 2,
+		nextToDoColumnId: 1,
+		date: new Date(),
+	},
+	{
+		id: 5,
+		type: 'add',
+		userName: '한진탁',
+		toDoTitle: '쇼핑하기',
+		toDoColumnId: 3,
+		nextToDoColumnId: null,
+		date: new Date(),
+	},
+];
+
 export default processedData;
