@@ -58,7 +58,7 @@ button {
 	}
 }
 
-.todo-log {
+.todo-log-container {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -77,4 +77,8 @@ button {
 			border: 1px solid black;
 		}
 	}
+}
+
+.todo-log-container.visible {
+	visibility: visible;
 }
