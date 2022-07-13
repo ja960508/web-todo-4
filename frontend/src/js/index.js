@@ -1,2 +1,4 @@
 import css from '../styles/style.scss';
-import './main.js';
+import App from './app';
+
+new App(document.querySelector('.app'));
