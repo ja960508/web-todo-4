@@ -24,8 +24,13 @@ class TodoContainer extends Component {
 					new TodoColumn('div', this.$target, {
 						class: ['column'],
 						columnData: this.state.columnsData[key],
+						showTodoAddForm: this.showTodoAddForm,
 					})
 			);
+	}
+
+	showTodoAddForm(columnId) {
+		console.log(`${columnId} 생성`);
 	}
 }
 

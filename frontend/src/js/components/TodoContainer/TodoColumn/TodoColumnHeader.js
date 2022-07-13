@@ -9,9 +9,15 @@ class TodoColumnHeader extends Component {
 		return `
 		<h3>${this.props.title}</h3>
 		<span class="count">${this.props.count}</span>
-		<button>+</button>
-		<button>X</button>
+		<button class='todo-add-btn'>+</button>
+		<button class='column-remove-btn'>X</button>
 	`;
+	}
+
+	setEvent() {
+		this.addEvent('click', '.todo-add-btn', () =>
+			this.props.showTodoAddForm(this.props.title)
+		);
 	}
 }
 
