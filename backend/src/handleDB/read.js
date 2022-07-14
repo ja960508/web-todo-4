@@ -1,14 +1,28 @@
-import mysql from 'mysql2';
 import connection from "./config.js";
 
-function readTodos() {
-     connection.query(
-         'SELECT * FROM USER_TB WHERE TRUE',
-         (err, results, fields) => {
-             console.log(results);
-             console.log(fields);
-         }
-     )
+function handleDB({callback, query, queryData}) {
+    if (queryData){
+        connection.query(
+            query,
+            queryData,
+            (err, results, fields) => {
+                if (err) return callback(false);
+                console.log('쿼리결과', results);
+                callback(results);
+            }
+        )
+    }
+    else {
+        connection.query(
+            query,
+            (err, results, fields) => {
+                if (err) return callback(false);
+                console.log('쿼리결과', results);
+                callback(results);
+            }
+        )
+    }
 }
 
-export default readTodos;
+
+export  {handleDB};

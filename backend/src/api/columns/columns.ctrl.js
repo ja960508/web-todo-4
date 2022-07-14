@@ -1,6 +1,9 @@
 import { updateColumnFromDB } from "../../queries.js";
 
 export function updateColumn(req, res) {
-  const column = updateColumnFromDB({ ...req.body });
-  res.json(column);
+  const callback = (result) => {
+    if (result) res.json({result: 'success'});
+    else res.json({result: 'failed'});
+  }
+  updateColumnFromDB({...req.body, callback})
 }
