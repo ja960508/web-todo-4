@@ -58,7 +58,28 @@ class TodoColumn extends Component {
 					const subTarget = document.querySelector('.subTarget');
 
 					if (ghost && subTarget) {
+						const DIV = document.createElement('div');
+						DIV.classList.add('card-pocket');
+						const UL = todoCard.parentNode;
+						const belowNode = [];
+						UL.insertBefore(DIV, todoCard.nextElementSibling);
+						let flag = false;
+
 						todoCard.classList.add('fade');
+
+						todoCard.parentNode.childNodes.forEach((item) => {
+							if (item.tagName === 'DIV') return;
+
+							flag && belowNode.push(item);
+
+							if (item.classList.contains('fade')) {
+								flag = true;
+							}
+						});
+
+						belowNode.forEach((node) => DIV.appendChild(node));
+
+						DIV.style.transform = `translateY(-${todoCard.offsetHeight}px)`;
 
 						document.body.style.pointerEvents = 'none';
 						const xDiff =
@@ -73,6 +94,17 @@ class TodoColumn extends Component {
 						}px)`;
 
 						setTimeout(() => {
+							const nodeList = [];
+							DIV.childNodes.forEach((node) => {
+								nodeList.push(node);
+							});
+
+							nodeList.forEach((node) =>
+								UL.insertBefore(node, UL.querySelector('.card-pocket'))
+							);
+
+							DIV.parentNode.removeChild(DIV);
+
 							document.body.removeAttribute('style');
 
 							if (!mouseUp(e)) {
