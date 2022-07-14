@@ -20,3 +20,20 @@ function getTodoList(elemBelow) {
 
 	return null;
 }
+
+function getClosestCardElement(todoList, dropYPoint) {
+	const closestCard = { offset: Number.POSITIVE_INFINITY, element: null };
+
+	todoList.forEach((card) => {
+		const box = card.getBoundingClientRect();
+		const boxMidYPoint = box.top + box.height / 2;
+		const offset = Math.abs(dropYPoint - boxMidYPoint);
+
+		if (offset < closestCard.offset) {
+			closestCard.offset = offset;
+			closestCard.element = card;
+		}
+	});
+
+	return closestCard.element;
+}
