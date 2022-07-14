@@ -1,12 +1,5 @@
 import mysql from 'mysql2';
-import {MYSQL_DB, MYSQL_HOST, MYSQL_ID, MYSQL_PW} from "./config.js";
-
-const connection = mysql.createConnection({
-    host: MYSQL_HOST,
-    user: MYSQL_ID,
-    password: MYSQL_PW,
-    database: MYSQL_DB
-});
+import connection from "./config.js";
 
 function readTodos() {
      connection.query(
@@ -17,3 +10,5 @@ function readTodos() {
          }
      )
 }
+
+export default readTodos;
