@@ -107,7 +107,11 @@ class TodoContainer extends Component {
 		this.handleTodoCard['confirmAddTodo']({
 			$parent,
 			$beforeElement: $todoAddForm,
-			props: { todo, todoId: $todoAddForm.dataset.todoId },
+			props: {
+				todo,
+				todoId: $todoAddForm.dataset.todoId,
+				index: $todoAddForm.dataset.todoId,
+			},
 		});
 	}
 
@@ -118,6 +122,7 @@ class TodoContainer extends Component {
 			content: $beforeElement.querySelector('.card-content').innerText,
 			dataset: {
 				todoId: $beforeElement.dataset.todoId,
+				index: $beforeElement.dataset.index,
 				type: 'edit',
 			},
 		};
@@ -162,6 +167,7 @@ class TodoContainer extends Component {
 	createTodoCard = ({ $parent, props = {}, $beforeElement }) => {
 		const classList = [...(props.class || []), 'todo-card'];
 		const todoId = props.todoId;
+		const index = props.index;
 
 		if (todoId) {
 			// todoId가 있을 때
@@ -183,6 +189,7 @@ class TodoContainer extends Component {
 					title: props.todo.title,
 					content: props.todo.content,
 					columnId,
+					index,
 				};
 
 				let target = this.state.columnData[columnId].todos.findIndex(
@@ -211,10 +218,11 @@ class TodoContainer extends Component {
 					.closest('.column').dataset.columnId;
 
 				const todo = {
-					id: todoId,
+					id: id,
 					title: props.todo.title,
 					content: props.todo.content,
 					columnId,
+					index: this.state.columnData[columnId].todos.length,
 				};
 
 				this.state.columnData[columnId].todos.push(todo);

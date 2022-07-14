@@ -18,7 +18,7 @@ class TodoColumn extends Component {
 		});
 		new TodoList('ul', this.$target, {
 			class: ['todo-list'],
-			todos: todos,
+			todos: todos.sort((a, b) => a.index - b.index),
 		});
 	}
 
@@ -58,12 +58,15 @@ class TodoColumn extends Component {
 					const subTarget = document.querySelector('.subTarget');
 
 					if (ghost && subTarget) {
+						const columnId = todoCard.closest('.column').dataset.columnId;
+						const todoId = todoCard.dataset.todoId;
 						const DIV = document.createElement('div');
-						DIV.classList.add('card-pocket');
 						const UL = todoCard.parentNode;
 						const belowNode = [];
-						UL.insertBefore(DIV, todoCard.nextElementSibling);
 						let flag = false;
+
+						DIV.classList.add('card-pocket');
+						UL.insertBefore(DIV, todoCard.nextElementSibling);
 
 						todoCard.classList.add('fade');
 
