@@ -41,6 +41,32 @@ class TodoContainer extends Component {
 		}
 	}
 
+	addStart($column) {
+		const $parent = $column.querySelector('.todo-list');
+		const $beforeElement = $parent.querySelector('ul > li:first-child');
+		let $newAddForm = null;
+
+		// 해당 컬럼이 add-form 이 아닌 경우 해당 컬럼에 add-form 생성
+		if ($beforeElement?.dataset.type !== 'add') {
+			$newAddForm = this.handleTodoCard['addStart']({
+				$parent,
+				$beforeElement,
+				props: {
+					dataset: {
+						type: 'add',
+					},
+				},
+			});
+			// 기존에 열려있던 addForm 닫기
+			this.removeAddForm($newAddForm);
+			this.prevCard && this.handlePrevCard();
+		}
+		// 해당 컬럼이 add-form 이었던 경우
+		else {
+			this.removeAddForm();
+		}
+	}
+
 	cancelAddTodo() {
 		this.removeAddForm();
 		this.handlePrevCard();
