@@ -8,3 +8,15 @@ export function onMouseMove(target) {
 		moveAt(target, event.pageX, event.pageY);
 	};
 }
+
+function getTodoList(elemBelow) {
+	if (elemBelow.closest('.column ul')) {
+		return elemBelow.closest('.column ul');
+	}
+
+	if (elemBelow.classList.contains('column')) {
+		return elemBelow.querySelector('ul');
+	}
+
+	return null;
+}
