@@ -1,7 +1,7 @@
 import Component from '../../../core/Component';
 import TodoColumnHeader from './TodoColumnHeader';
 import TodoList from './TodoList';
-import { mouseUp, moveAt, onMouseMove } from '../../../events/todoDragEvent';
+import { mouseUp, onMouseMove } from '../../../events/todoDragEvent';
 
 class TodoColumn extends Component {
 	constructor(...data) {
@@ -27,28 +27,17 @@ class TodoColumn extends Component {
 		let todoCard = null;
 
 		this.addEvent('mousedown', '.column', (e) => {
-			todoCard = e.target.closest('li');
+			if (e.detail !== 1) return;
 
-			if (!todoCard) {
+			todoCard = e.target.closest('.todo-card');
+
+			if (!todoCard || e.target.tagName === 'BUTTON') {
 				return;
 			}
 
-			const ghost = todoCard.cloneNode(true);
-			todoCard.classList.add('dragging');
-
-			handleMouseMove = onMouseMove(ghost);
-
-			ghost.style.position = 'absolute';
-			ghost.style.zIndex = 1000;
-			ghost.style.width = window.getComputedStyle(todoCard).width;
-			ghost.style.zIndex = window.getComputedStyle(todoCard).height;
-
-			document.body.appendChild(ghost);
-
-			moveAt(ghost, e.pageX, e.pageY);
+			handleMouseMove = onMouseMove(todoCard);
 
 			document.addEventListener('mousemove', handleMouseMove);
-
 			document.addEventListener(
 				'mouseup',
 				(e) => {

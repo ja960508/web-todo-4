@@ -1,24 +1,37 @@
+let ghost;
+
 export function moveAt(target, pageX, pageY) {
 	target.style.left = pageX - target.offsetWidth / 2 + 'px';
 	target.style.top = pageY - target.offsetHeight / 2 + 'px';
 }
 
 export function onMouseMove(target) {
+	ghost = target.cloneNode(true);
+	document.body.appendChild(ghost);
+	ghost.style.display = 'none';
+
 	return (event) => {
-		moveAt(target, event.pageX, event.pageY);
+		target.classList.add('dragging');
+
+		ghost.style.position = 'absolute';
+		ghost.style.display = 'list-item';
+		ghost.style.zIndex = 1000;
+		ghost.style.width = window.getComputedStyle(target).width;
+		ghost.style.zIndex = window.getComputedStyle(target).height;
+
+		moveAt(ghost, event.pageX, event.pageY);
 	};
 }
 export function mouseUp(e) {
-	const ghost = e.target.closest('li');
-
 	let belowCard;
 
-	ghost.hidden = true;
+	ghost.style.display = 'none';
 	let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-	ghost.hidden = false;
+	ghost.style.display = 'list-item';
 
 	let todoList = getTodoList(elemBelow);
 
+	console.log(todoList);
 	if (!todoList) {
 		document.body.removeChild(ghost);
 
