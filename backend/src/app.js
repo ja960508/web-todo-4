@@ -7,6 +7,7 @@ const port = 3000;
 
 app.use(cors({ origin: "http://localhost:8080", credentials: true }));
 app.use(express.json());
+app.use("/", () => console.log('진탁'));
 app.use("/api", APIRouter);
 
 app.listen(port, () => {

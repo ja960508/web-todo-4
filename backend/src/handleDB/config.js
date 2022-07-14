@@ -1,0 +1,3 @@
+const {MYSQL_DB, MYSQL_PW,MYSQL_HOST, MYSQL_ID} = process.env;
+
+export {MYSQL_DB, MYSQL_HOST, MYSQL_PW, MYSQL_ID};
