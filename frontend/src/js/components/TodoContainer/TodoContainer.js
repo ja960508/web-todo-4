@@ -41,6 +41,27 @@ class TodoContainer extends Component {
 		}
 	}
 
+	setEvent() {
+		this.addEvent('click', '.column', (e) => {
+			e.preventDefault();
+			const $column = e.target.closest('.column');
+			const $clickedTarget = e.target;
+
+			if ($clickedTarget.classList.contains('todo-add-btn')) {
+				this.addStart($column);
+			} else if ($clickedTarget.classList.contains('add-form-cancel')) {
+				this.cancelAddTodo();
+			} else if ($clickedTarget.classList.contains('add-form-submit')) {
+				this.confirmAddTodo($clickedTarget);
+			}
+		});
+
+		this.addEvent('dblclick', '.todo-card', (e) => {
+			const $todoCard = e.target.closest('.todo-card');
+			this.editStart($todoCard);
+		});
+	}
+
 	addStart($column) {
 		const $parent = $column.querySelector('.todo-list');
 		const $beforeElement = $parent.querySelector('ul > li:first-child');
