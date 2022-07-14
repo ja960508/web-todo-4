@@ -1,0 +1,22 @@
+import Component from '../../core/component';
+class TodoAddForm extends Component {
+	constructor(...data) {
+		super(...data);
+	}
+
+	template() {
+		const { type, title: originTitle, content: originContent } = this.props;
+		const title = originTitle ?? '';
+		const content = originContent ?? '';
+		const btnName = type === 'edit' ? '수정' : '등록';
+		return `
+				<input class='add-form-title' type='text' placeholder='제목을 입력하세요' name="title" value="${title}" />
+				<input class='add-form-content' type='text' placeholder='내용을 입력하세요' name="content" maxlength="500" value="${content}" />
+				<div>
+				<button class='add-form-cancel primary-btn--gray' type='button'>취소</button>
+				<button class='add-form-submit primary-btn--blue' type='submit' disabled="true">${btnName}</button>
+				 </div>
+		`;
+	}
+}
+export default TodoAddForm;
