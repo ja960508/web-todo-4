@@ -1,4 +1,4 @@
-import Component from '../../core/component';
+import Component from '../../core/Component';
 import logData2Desc from '../../utils/logTypeMap';
 import timeDiff from '../../utils/timeDiff';
 

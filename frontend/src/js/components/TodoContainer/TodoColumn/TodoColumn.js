@@ -1,4 +1,4 @@
-import Component from '../../../core/component';
+import Component from '../../../core/Component';
 import TodoColumnHeader from './TodoColumnHeader';
 import TodoList from './TodoList';
 
@@ -16,6 +16,7 @@ class TodoColumn extends Component {
 			showTodoAddForm: this.props.showTodoAddForm,
 		});
 		new TodoList('ul', this.$target, {
+			class: ['todo-list'],
 			todos: todos,
 		});
 	}

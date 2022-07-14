@@ -1,4 +1,4 @@
-import Component from '../../core/component';
+import Component from '../../core/Component';
 import processedData from '../../../../mock/mock';
 import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
@@ -13,13 +13,11 @@ class TodoContainer extends Component {
 	}
 
 	setup() {
-		const data = new Promise((resolve) => resolve(processedData)).then(
-			(res) => {
-				const columnData = {};
-				Object.keys(res).forEach((key) => (columnData[key] = { ...res[key] }));
-				this.setState({ columnData });
-			}
-		);
+		new Promise((resolve) => resolve(processedData)).then((res) => {
+			const columnData = {};
+			Object.keys(res).forEach((key) => (columnData[key] = { ...res[key] }));
+			this.setState({ columnData });
+		});
 	}
 
 	setChildren() {

@@ -1,4 +1,4 @@
-import Component from '../../core/component';
+import Component from '../../core/Component';
 import TodoLog from './TodoLog';
 import { logData } from '../../../../mock/mock';
 
@@ -8,7 +8,7 @@ class TodoLogContainer extends Component {
 	}
 
 	setup() {
-		const data = new Promise((resolve) => resolve(logData)).then((res) => {
+		new Promise((resolve) => resolve(logData)).then((res) => {
 			this.setState({ logData: res });
 		});
 	}

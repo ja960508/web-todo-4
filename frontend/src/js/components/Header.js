@@ -1,4 +1,4 @@
-import Component from '../core/component';
+import Component from '../core/Component';
 
 class Header extends Component {
 	constructor(...data) {
@@ -6,7 +6,7 @@ class Header extends Component {
 	}
 
 	template() {
-		return `			<h1>TO-DO LIST</h1>
+		return `<h1>TO-DO LIST</h1>
     <button class="menu">메뉴</button>`;
 	}
 

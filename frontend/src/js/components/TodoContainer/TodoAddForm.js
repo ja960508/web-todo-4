@@ -1,4 +1,4 @@
-import Component from '../../core/component';
+import Component from '../../core/Component';
 class TodoAddForm extends Component {
 	constructor(...data) {
 		super(...data);
@@ -28,7 +28,7 @@ class TodoAddForm extends Component {
 			return false;
 		};
 
-		this.addEvent('input', 'input', (e) => {
+		this.addEvent('input', 'input', () => {
 			const { title: originTitle, content: originContent } = this.props;
 			const [title, content] = [
 				this.$title.value.trim(),

@@ -1,4 +1,4 @@
-import Component from '../../../core/component';
+import Component from '../../../core/Component';
 
 class TodoColumnHeader extends Component {
 	constructor(...data) {
@@ -12,12 +12,6 @@ class TodoColumnHeader extends Component {
 		<button class='todo-add-btn'>+</button>
 		<button class='column-remove-btn'>X</button>
 	`;
-	}
-
-	setEvent() {
-		this.addEvent('click', '.todo-add-btn', () =>
-			this.props.showTodoAddForm(this.props.title)
-		);
 	}
 }
 

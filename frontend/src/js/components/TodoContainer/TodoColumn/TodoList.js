@@ -1,4 +1,4 @@
-import Component from '../../../core/component';
+import Component from '../../../core/Component';
 import TodoCard from './TodoCard';
 
 class TodoList extends Component {
@@ -9,7 +9,9 @@ class TodoList extends Component {
 	setChildren() {
 		const { todos } = this.props;
 
-		todos.forEach((todo) => new TodoCard('li', this.$target, { todo }));
+		todos.forEach(
+			(todo) => new TodoCard('li', this.$target, { class: ['todo-card'], todo })
+		);
 	}
 }
 

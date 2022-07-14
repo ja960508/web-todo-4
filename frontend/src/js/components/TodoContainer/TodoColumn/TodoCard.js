@@ -1,4 +1,4 @@
-import Component from '../../../core/component';
+import Component from '../../../core/Component';
 
 class TodoCard extends Component {
 	constructor(...data) {
