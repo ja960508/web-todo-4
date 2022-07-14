@@ -4,7 +4,7 @@ import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
 import Modal from './modal';
-import { addTodo, editTodo } from '../../api/todos';
+import { addTodo, editTodo, removeTodo } from '../../api/todos';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -235,8 +235,19 @@ class TodoContainer extends Component {
 
 	openModal($todoCard) {
 		const removeCard = () => {
-			console.log($todoCard.parentNode);
-			$todoCard.parentNode.removeChild($todoCard);
+			const columnId = $todoCard.closest('.column').dataset.columnId;
+			const todoId = $todoCard.dataset.todoId;
+
+			removeTodo(todoId).then(() => {
+				this.state.columnData[columnId].todos = this.state.columnData[
+					columnId
+				].todos.filter((todo) => {
+					return todo.id !== todoId;
+				});
+
+				this.setState({ ...this.state });
+			});
+
 			this.closeModal();
 		};
 
