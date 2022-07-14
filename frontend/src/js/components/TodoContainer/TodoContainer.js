@@ -154,7 +154,7 @@ class TodoContainer extends Component {
 		return new TodoAddForm(
 			'li',
 			$parent,
-			{ ...props, class: classList },
+			{ ...props, class: [...classList, 'blocked'] },
 			$beforeElement
 		);
 	}
