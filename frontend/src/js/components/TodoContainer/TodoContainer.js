@@ -4,7 +4,7 @@ import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
 import Modal from './modal';
-import { addTodo, editTodo, removeTodo } from '../../api/todos';
+import { addTodo, editTodo, removeTodo, updateTodo } from '../../api/todos';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -37,9 +37,28 @@ class TodoContainer extends Component {
 					columnId: key,
 				},
 				columnData: this.state.columnData[key],
+				onDragEnd: this.setDragAndDropState,
 			});
 		}
 	}
+
+	setDragAndDropState = (todoId, prevColumnId, nextColumnId) => {
+		updateTodo().then(() => {
+			const todoIndex = this.state.columnData[prevColumnId].todos.findIndex(
+				(todo) => todo.id === todoId
+			);
+			const todo = this.state.columnData[prevColumnId].todos[todoIndex];
+			const prevColumn = this.state.columnData[prevColumnId].todos.filter(
+				(todo) => {
+					return todo.id !== todoId;
+				}
+			);
+			const nextColumn = this.state.columnData[nextColumnId].todos.push(todo);
+			this.state.columnData[prevColumnId].todos = prevColumn;
+
+			this.setState({ ...this.state });
+		});
+	};
 
 	setEvent() {
 		this.addEvent('click', '.column', (e) => {

@@ -58,8 +58,9 @@ class TodoColumn extends Component {
 					const subTarget = document.querySelector('.subTarget');
 
 					if (ghost && subTarget) {
-						const columnId = todoCard.closest('.column').dataset.columnId;
-						const todoId = todoCard.dataset.todoId;
+						const prevColumnId = todoCard.closest('.column').dataset.columnId;
+						const currentTodoId = todoCard.dataset.todoId;
+
 						const DIV = document.createElement('div');
 						const UL = todoCard.parentNode;
 						const belowNode = [];
@@ -98,6 +99,8 @@ class TodoColumn extends Component {
 
 						setTimeout(() => {
 							const nodeList = [];
+							let index;
+							let nextTodoList;
 							DIV.childNodes.forEach((node) => {
 								nodeList.push(node);
 							});
@@ -110,9 +113,33 @@ class TodoColumn extends Component {
 
 							document.body.removeAttribute('style');
 
-							if (!mouseUp(e)) {
+							[index, nextTodoList] = mouseUp(e, prevColumnId);
+
+							if (!index) {
 								return;
 							}
+
+							nextTodoList.childNodes.forEach((node) => {
+								if (index < node.dataset.index) {
+									node.dataset.index = String(Number(node.dataset.index) + 1);
+								}
+
+								if (node.dataset.index === index) {
+									index -= 1;
+
+									return;
+								}
+
+								if (index < node.dataset.index) {
+									node.dataset.index = String(Number(node.dataset.index) + 1);
+								}
+							});
+
+							this.props.onDragEnd(
+								todoCard.dataset.todoId,
+								prevColumnId,
+								nextTodoList.closest('.column').dataset.columnId
+							);
 
 							todoCard.parentNode.removeChild(todoCard);
 						}, 500);
@@ -120,9 +147,10 @@ class TodoColumn extends Component {
 						return;
 					}
 
-					if (!mouseUp(e)) {
+					if (!mouseUp(e)[0]) {
 						return;
 					}
+					console.log('??');
 
 					todoCard.parentNode.removeChild(todoCard);
 				},

@@ -9,3 +9,7 @@ export function editTodo(todoId) {
 export function removeTodo(todoId) {
 	return new Promise((res) => res(todoId));
 }
+
+export function updateTodo() {
+	return new Promise((res) => res(123));
+}
