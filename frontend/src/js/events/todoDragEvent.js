@@ -8,8 +8,9 @@ export function moveAt(target, pageX, pageY) {
 
 export function onMouseMove(target) {
 	ghost = target.cloneNode(true);
+	ghost.classList.add('ghost');
 	subTarget = target.cloneNode(true);
-	subTarget.classList.add('afterimage');
+	subTarget.classList.add('afterimage', 'subTarget');
 	document.body.appendChild(ghost);
 	ghost.style.display = 'none';
 
@@ -83,8 +84,6 @@ function getPosition(e) {
 export function mouseUp(e) {
 	let [belowCard, todoList] = getPosition(e);
 
-	console.log(belowCard, todoList);
-
 	if (!todoList) {
 		document.body.removeChild(ghost);
 
@@ -97,11 +96,11 @@ export function mouseUp(e) {
 	ghost = null;
 
 	if (!subTarget.parentNode) {
-		console.log('??', subTarget);
 		return false;
 	}
 
 	subTarget.classList.remove('afterimage');
+	subTarget.classList.remove('subTarget');
 	subTarget = null;
 
 	return true;

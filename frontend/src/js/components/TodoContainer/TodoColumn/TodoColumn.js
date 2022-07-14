@@ -47,11 +47,43 @@ class TodoColumn extends Component {
 			const handleMouseMove = onMouseMove(todoCard);
 
 			document.addEventListener('mousemove', handleMouseMove);
+
 			document.addEventListener(
 				'mouseup',
 				(e) => {
 					todoCard.classList.remove('afterimage');
 					document.removeEventListener('mousemove', handleMouseMove);
+
+					const ghost = document.querySelector('.ghost');
+					const subTarget = document.querySelector('.subTarget');
+
+					if (ghost && subTarget) {
+						todoCard.classList.add('fade');
+
+						document.body.style.pointerEvents = 'none';
+						const xDiff =
+							ghost.getBoundingClientRect().x -
+							subTarget.getBoundingClientRect().x;
+						const yDiff =
+							ghost.getBoundingClientRect().y -
+							subTarget.getBoundingClientRect().y;
+
+						ghost.style.transform = `translate(${xDiff * -1}px, ${
+							yDiff * -1
+						}px)`;
+
+						setTimeout(() => {
+							document.body.removeAttribute('style');
+
+							if (!mouseUp(e)) {
+								return;
+							}
+
+							todoCard.parentNode.removeChild(todoCard);
+						}, 500);
+
+						return;
+					}
 
 					if (!mouseUp(e)) {
 						return;
