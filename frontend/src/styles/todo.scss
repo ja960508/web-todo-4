@@ -29,16 +29,6 @@
 	}
 }
 
-.todo-card {
-	padding: 1rem;
-	margin-bottom: 0.5rem;
-	border: 1px solid black;
-}
-
-.todo-card.dragging {
-	background-color: lightcyan;
-}
-
 .todo-log-container {
 	position: absolute;
 	top: 0;
@@ -82,4 +72,22 @@
 			flex: 1 1 50%;
 		}
 	}
+}
+
+.modal-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal {
+	background-color: white;
+	opacity: 1;
+	height: 10rem;
 }
