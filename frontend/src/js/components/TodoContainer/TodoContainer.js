@@ -54,6 +54,11 @@ class TodoContainer extends Component {
 		this.prevCard && (this.prevCard.style.display = 'none');
 	}
 
+	removePrevCard() {
+		this.prevCard && this.prevCard.parentNode.removeChild(this.prevCard);
+		this.prevCard = null;
+	}
+
 	createAddForm({ $parent, props = {}, $beforeElement }) {
 		const classList = [...(props.class || []), 'todo-add-form'];
 		return new TodoAddForm(
