@@ -7,7 +7,7 @@ class Header extends Component {
 
 	template() {
 		return `<h1>TO-DO LIST</h1>
-    <button class="menu">메뉴</button>`;
+    <button class="menu"></button>`;
 	}
 
 	setEvent() {

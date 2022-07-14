@@ -1,4 +1,4 @@
-@import "./todo.scss";
+@import './todo.scss';
 
 * {
 	box-sizing: border-box;
@@ -8,6 +8,7 @@ body {
 	user-select: none;
 	max-width: 1600px;
 	margin: 0 auto;
+	background-color: #e5e5e5;
 }
 
 ul {
@@ -20,11 +21,18 @@ button {
 	background-color: transparent;
 	border: none;
 	outline: none;
+	cursor: pointer;
 }
 
 .header {
 	display: flex;
 	justify-content: space-between;
-	border: 1px solid red;
-}
+	align-items: center;
 
+	button {
+		width: 1rem;
+		height: 1rem;
+		background-image: url('../assets/menu.svg');
+		background-repeat: no-repeat;
+	}
+}
