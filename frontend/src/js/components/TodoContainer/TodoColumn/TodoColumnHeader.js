@@ -7,10 +7,14 @@ class TodoColumnHeader extends Component {
 
 	template() {
 		return `
-		<h3>${this.props.title}</h3>
-		<span class="count">${this.props.count}</span>
-		<button class='todo-add-btn'>+</button>
-		<button class='column-remove-btn'>X</button>
+		<div>
+			<h3>${this.props.title}</h3>
+			<span class="count">${this.props.count}</span>
+		</div>
+		<div>
+			<button class='todo-add-btn'></button>
+			<button class='column-remove-btn'</button>
+		</div>
 	`;
 	}
 }
