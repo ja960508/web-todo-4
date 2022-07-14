@@ -1,5 +1,6 @@
 @import './todo.scss';
 @import './modal.scss';
+@import './log.scss';
 
 :root {
 	--baemin-light-gray: #e5e5e5;
@@ -19,6 +20,7 @@ body {
 	max-width: 1600px;
 	margin: 0 auto;
 	background-color: var(--baemin-light-gray);
+	padding: 0 1rem;
 }
 
 input {

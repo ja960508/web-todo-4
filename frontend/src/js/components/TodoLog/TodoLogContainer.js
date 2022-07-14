@@ -15,8 +15,10 @@ class TodoLogContainer extends Component {
 
 	template() {
 		return `<header>
-      <button>X</button>
-    </header>`;
+      <button class="log-close-btn"></button>
+			</header>
+			<ul class="log-list"></ul>
+			`;
 	}
 
 	setChildren() {
@@ -27,14 +29,14 @@ class TodoLogContainer extends Component {
 		this.state.logData &&
 			this.state.logData.forEach(
 				(item) =>
-					new TodoLog('li', this.$target, {
+					new TodoLog('li', this.$target.querySelector('.log-list'), {
 						logData: item,
 					})
 			);
 	}
 
 	setEvent() {
-		this.addEvent('click', 'header button', () =>
+		this.addEvent('click', '.log-close-btn', () =>
 			this.$target.classList.remove('visible')
 		);
 	}

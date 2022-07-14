@@ -1,6 +1,7 @@
 import Component from '../../core/Component';
 import logData2Desc from '../../utils/logTypeMap';
 import timeDiff from '../../utils/timeDiff';
+import avatar from '../../../assets/user_avatar_img.svg';
 
 class TodoLog extends Component {
 	constructor(...data) {
@@ -9,13 +10,13 @@ class TodoLog extends Component {
 
 	template() {
 		const { type, date } = this.props.logData;
-		return `<div>Avatar</div>
+		return `<img src="${avatar}" alt="Avatart" />
     <div class="log__content">
-      <div>@sam</div>
-      <div>
+      <div class="user">@sam</div>
+      <div class="log-content">
       	${logData2Desc[type](this.props.logData)}
       </div>
-      <div>${timeDiff({ date })}</div>
+      <div class="time">${timeDiff({ date })}</div>
     </div>`;
 	}
 }
