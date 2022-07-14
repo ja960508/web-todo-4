@@ -247,11 +247,24 @@ class TodoContainer extends Component {
 			const todoId = $todoCard.dataset.todoId;
 
 			removeTodo(todoId).then(() => {
+				let index = -1;
 				this.state.columnData[columnId].todos = this.state.columnData[
 					columnId
-				].todos.filter((todo) => {
-					return todo.id !== todoId;
-				});
+				].todos
+					.filter((todo) => {
+						if (todo.id === todoId) {
+							index = todo.index;
+						}
+
+						return todo.id !== todoId;
+					})
+					.map((todo) => {
+						if (index < todo.index) {
+							todo.index -= 1;
+						}
+
+						return todo;
+					});
 
 				this.setState({ ...this.state });
 			});
