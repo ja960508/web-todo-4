@@ -23,25 +23,22 @@ class TodoColumn extends Component {
 	}
 
 	setEvent() {
-		let handleMouseMove = null;
-		let todoCard = null;
-
 		this.addEvent('mousedown', '.column', (e) => {
 			if (e.detail !== 1) return;
 
-			todoCard = e.target.closest('.todo-card');
+			const todoCard = e.target.closest('.todo-card');
 
 			if (!todoCard || e.target.tagName === 'BUTTON') {
 				return;
 			}
 
-			handleMouseMove = onMouseMove(todoCard);
+			const handleMouseMove = onMouseMove(todoCard);
 
 			document.addEventListener('mousemove', handleMouseMove);
 			document.addEventListener(
 				'mouseup',
 				(e) => {
-					todoCard.classList.remove('dragging');
+					todoCard.classList.remove('afterimage');
 					document.removeEventListener('mousemove', handleMouseMove);
 
 					if (!mouseUp(e)) {
