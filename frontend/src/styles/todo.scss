@@ -183,17 +183,41 @@
 	display: flex;
 	flex-direction: column;
 	gap: 0.75rem;
+	border: 1px solid var(--baemin-deep-blue);
+	background-color: #ffffff;
+	border-radius: 6px;
 
-	input {
+	.add-form-title {
+		font-weight: 700;
+		font-size: 1rem;
 		padding: 0.5rem 0;
+		border-bottom: 0.5px solid var(--baemin-light-gray);
+	}
+
+	.add-form-content {
+		all: unset;
+		font-weight: 400;
+		font-size: 14px;
+		padding: 0.5rem 0;
+		height: 2rem;
+		border-bottom: 0.5px solid var(--baemin-light-gray);
 	}
 
 	div {
 		display: flex;
+		gap: 1rem;
 
 		button {
 			flex: 1 1 50%;
 		}
+	}
+}
+
+.todo-add-form.blocked {
+	.add-form-submit {
+		background: #86c6ff;
+		border-radius: 6px;
+		color: rgba(255, 255, 255, 0.4);
 	}
 }
 
