@@ -41,6 +41,23 @@ class TodoContainer extends Component {
 		}
 	}
 
+	confirmAddTodo($addFormSubmitBtn) {
+		const $todoAddForm = $addFormSubmitBtn.closest('.todo-add-form');
+		const todo = {
+			title: $todoAddForm.querySelector('.add-form-title').value,
+			content: $todoAddForm.querySelector('.add-form-content').value,
+		};
+		const $parent = $todoAddForm.parentNode;
+
+		this.handleTodoCard['confirmAddTodo']({
+			$parent,
+			$beforeElement: $todoAddForm,
+			props: { todo },
+		});
+		this.removePrevCard();
+		this.removeAddForm();
+	}
+
 	editStart($beforeElement) {
 		const props = {
 			type: 'edit',
