@@ -3,6 +3,7 @@ import processedData from '../../../../mock/mock';
 import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
+import Modal from './modal';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -51,6 +52,9 @@ class TodoContainer extends Component {
 				this.cancelAddTodo();
 			} else if ($clickedTarget.classList.contains('add-form-submit')) {
 				this.confirmAddTodo($clickedTarget);
+			} else if ($clickedTarget.classList.contains('card-close-btn')) {
+				const $todoCard = $clickedTarget.closest('.todo-card');
+				this.modal ? this.closeModal() : this.openModal($todoCard);
 			}
 		});
 
@@ -171,6 +175,26 @@ class TodoContainer extends Component {
 		confirmEditTodo: this.createTodoCard,
 		confirmAddTodo: this.createTodoCard,
 	};
+
+	openModal($todoCard) {
+		const removeCard = () => {
+			console.log($todoCard.parentNode);
+			$todoCard.parentNode.removeChild($todoCard);
+			this.closeModal();
+		};
+
+		this.modal = new Modal('div', document.querySelector('body'), {
+			class: ['modal-container'],
+			removeCard,
+			closeModal: this.closeModal.bind(this),
+		});
+	}
+
+	closeModal() {
+		const $modal = this.modal.$target;
+		$modal.parentNode.removeChild($modal);
+		this.modal = null;
+	}
 }
 
 export default TodoContainer;
