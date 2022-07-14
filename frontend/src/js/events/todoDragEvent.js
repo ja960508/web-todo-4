@@ -8,6 +8,45 @@ export function onMouseMove(target) {
 		moveAt(target, event.pageX, event.pageY);
 	};
 }
+export function mouseUp(e) {
+	const ghost = e.target;
+
+	let belowCard;
+
+	ghost.hidden = true;
+	let elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+	ghost.hidden = false;
+
+	let todoList = getTodoList(elemBelow);
+
+	if (!todoList) {
+		document.body.removeChild(ghost);
+
+		return false;
+	}
+
+	if (elemBelow.classList.contains('column')) {
+		belowCard = getClosestCardElement(todoList.childNodes, e.clientY);
+	} else {
+		belowCard = elemBelow.closest('.todo-card');
+	}
+
+	ghost.removeAttribute('style');
+
+	if (!belowCard) {
+		todoList.appendChild(ghost);
+
+		return true;
+	}
+
+	if (dropPointIsUpper(belowCard, e.clientY)) {
+		todoList.insertBefore(ghost, belowCard);
+	} else {
+		todoList.insertBefore(ghost, belowCard.nextElementSibling);
+	}
+
+	return true;
+}
 
 function getTodoList(elemBelow) {
 	if (elemBelow.closest('.column ul')) {
