@@ -41,6 +41,25 @@ class TodoContainer extends Component {
 		}
 	}
 
+	editStart($beforeElement) {
+		const props = {
+			type: 'edit',
+			title: $beforeElement.querySelector('h4').innerText,
+			content: $beforeElement.querySelector('.card-content').innerText,
+			dataset: {
+				type: 'edit',
+			},
+		};
+		const $parent = $beforeElement.parentNode;
+		const $newAddForm = this.handleTodoCard['editStart']({
+			$parent,
+			$beforeElement,
+			props,
+		});
+		this.removeAddForm($newAddForm);
+		this.handlePrevCard($beforeElement);
+	}
+
 	removeAddForm($newAddForm) {
 		this.addForm?.$target.parentNode.removeChild(this.addForm?.$target);
 		this.addForm = $newAddForm;
