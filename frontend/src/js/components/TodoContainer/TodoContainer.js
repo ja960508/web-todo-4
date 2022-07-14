@@ -167,12 +167,30 @@ class TodoContainer extends Component {
 			// todoId가 있을 때
 			// edit
 			editTodo().then(() => {
-				new TodoCard(
+				const elem = new TodoCard(
 					'li',
 					$parent,
 					{ ...props, class: classList, dataset: { todoId } },
 					$beforeElement
 				);
+
+				const columnId = document
+					.querySelector(`[data-todo-id='${todoId}']`)
+					.closest('.column').dataset.columnId;
+
+				const todo = {
+					id: todoId,
+					title: props.todo.title,
+					content: props.todo.content,
+					columnId,
+				};
+
+				let target = this.state.columnData[columnId].todos.findIndex(
+					(item) => item.id == todoId
+				);
+
+				this.state.columnData[columnId].todos[target] = { ...todo };
+				this.setState({ ...this.state });
 
 				this.removePrevCard();
 				this.removeAddForm();
@@ -187,6 +205,20 @@ class TodoContainer extends Component {
 					{ ...props, class: classList, dataset: { todoId: id } },
 					$beforeElement
 				);
+
+				const columnId = document
+					.querySelector(`[data-todo-id='${id}']`)
+					.closest('.column').dataset.columnId;
+
+				const todo = {
+					id: todoId,
+					title: props.todo.title,
+					content: props.todo.content,
+					columnId,
+				};
+
+				this.state.columnData[columnId].todos.push(todo);
+				this.setState({ ...this.state });
 
 				this.removePrevCard();
 				this.removeAddForm();
