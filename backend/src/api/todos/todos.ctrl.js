@@ -30,7 +30,7 @@ export function checkUsersColumn(req, res, next) {
   const { todoColumnId, nextTodoColumnId } = req.body;
 
   if (
-    !isUsersColumn({ userId, todoColumnId: todoColumnId ?? nextTodoColumnId })
+    !isUsersColumn({ userId, todoColumnId: todoColumnId ? todoColumnId : nextTodoColumnId })
   ) {
     res
       .status(400)

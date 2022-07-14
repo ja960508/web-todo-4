@@ -133,8 +133,9 @@ function readColumnFromDB({ todoColumnId }) {
 }
 
 function isUsersColumn({ todoColumnId, userId }) {
+	let tmp;
   return (
-    columnData.find((column) => column.id === todoColumnId)?.userId === userId
+    (tmp = columnData.find((column) => column.id === todoColumnId)) && tmp.userId === userId
   );
 }
 
