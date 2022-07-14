@@ -3,19 +3,98 @@
 	gap: 1rem;
 
 	.column {
-		flex: 1 1 33%;
+		flex: 1 1 300px;
 		border: 1px solid black;
 
 		header {
 			display: flex;
+			justify-content: space-between;
 			align-items: center;
+			padding: 0 1rem;
+
+			div {
+				display: flex;
+				align-items: center;
+			}
 
 			h3 {
 				margin-right: 1rem;
 			}
 
 			.count {
-				flex: 1 1 1%;
+				background-color: var(--baemin-mid-gray);
+				font-size: 1rem;
+				font-weight: bold;
+				border-radius: 50%;
+				width: 2rem;
+				height: 2rem;
+				line-height: 2rem;
+				text-align: center;
+			}
+
+			.todo-add-btn {
+				position: relative;
+				margin-right: 0.5rem;
+				width: 1.5rem;
+				height: 1.5rem;
+
+				&:hover {
+					&::after,
+					&::before {
+						background-color: var(--baemin-deep-blue);
+					}
+				}
+
+				&::after,
+				&::before {
+					content: '';
+					display: block;
+					width: 1.5px;
+					height: 1rem;
+					background-color: var(--baemin-mid-gray);
+					position: absolute;
+					left: 50%;
+				}
+
+				&::after {
+					transform: translate(-50%, -50%) rotate(0deg);
+				}
+
+				&::before {
+					transform: translate(-50%, -50%) rotate(90deg);
+				}
+			}
+
+			.column-remove-btn {
+				position: relative;
+				width: 1.5rem;
+				height: 1.5rem;
+
+				&:hover {
+					&::after,
+					&::before {
+						background-color: var(--baemin-warning-red);
+					}
+				}
+
+				&::after,
+				&::before {
+					content: '';
+					display: block;
+					width: 1.5px;
+					height: 1rem;
+					background-color: var(--baemin-mid-gray);
+					position: absolute;
+					left: 50%;
+				}
+
+				&::after {
+					transform: translate(-50%, -50%) rotate(45deg);
+				}
+
+				&::before {
+					transform: translate(-50%, -50%) rotate(-45deg);
+				}
 			}
 		}
 

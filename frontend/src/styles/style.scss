@@ -1,5 +1,13 @@
 @import './todo.scss';
 
+:root {
+	--baemin-light-gray: #e5e5e5;
+	--baemin-background-gray: ##f5f5f7;
+	--baemin-mid-gray: #bdbdbd;
+	--baemin-deep-blue: #0075de;
+	--baemin-warning-red: #ff4343;
+}
+
 * {
 	box-sizing: border-box;
 }
@@ -8,7 +16,7 @@ body {
 	user-select: none;
 	max-width: 1600px;
 	margin: 0 auto;
-	background-color: #e5e5e5;
+	background-color: var(--baemin-light-gray);
 }
 
 ul {
@@ -21,6 +29,7 @@ button {
 	background-color: transparent;
 	border: none;
 	outline: none;
+	padding: 0;
 	cursor: pointer;
 }
 
