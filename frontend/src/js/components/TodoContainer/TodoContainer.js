@@ -41,6 +41,11 @@ class TodoContainer extends Component {
 		}
 	}
 
+	removeAddForm($newAddForm) {
+		this.addForm?.$target.parentNode.removeChild(this.addForm?.$target);
+		this.addForm = $newAddForm;
+	}
+
 	createAddForm({ $parent, props = {}, $beforeElement }) {
 		const classList = [...(props.class || []), 'todo-add-form'];
 		return new TodoAddForm(
