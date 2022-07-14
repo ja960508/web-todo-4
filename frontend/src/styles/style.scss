@@ -6,6 +6,7 @@
 	--baemin-mid-gray: #bdbdbd;
 	--baemin-deep-blue: #0075de;
 	--baemin-warning-red: #ff4343;
+	--baemin-warning-light-red: #ffeeec;
 }
 
 * {
@@ -19,7 +20,12 @@ body {
 	background-color: var(--baemin-light-gray);
 }
 
-ul {
+h4 {
+	margin: 0;
+}
+
+ul,
+li {
 	list-style: none;
 	padding: 0;
 	margin: 0;

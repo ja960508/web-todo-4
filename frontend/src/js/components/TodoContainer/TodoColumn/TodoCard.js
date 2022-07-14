@@ -10,11 +10,20 @@ class TodoCard extends Component {
 		return `
     <header>
       <h4>${title}</h4>
-      <button class="card-close-btn">X</button>
+      <button class="card-close-btn"></button>
     </header>
     <p class="card-content">${content}</p>
     <p class="card-author">author by web</p>
 	`;
+	}
+
+	setEvent() {
+		this.addEvent('mouseover', '.card-close-btn', () => {
+			this.$target.classList.add('warning');
+		});
+		this.addEvent('mouseout', '.card-close-btn', () => {
+			this.$target.classList.remove('warning');
+		});
 	}
 }
 
