@@ -16,15 +16,6 @@ class TodoCard extends Component {
     <p class="card-author">author by web</p>
 	`;
 	}
-
-	setEvent() {
-		this.addEvent('mouseover', '.card-close-btn', () => {
-			this.$target.classList.add('warning');
-		});
-		this.addEvent('mouseout', '.card-close-btn', () => {
-			this.$target.classList.remove('warning');
-		});
-	}
 }
 
 export default TodoCard;

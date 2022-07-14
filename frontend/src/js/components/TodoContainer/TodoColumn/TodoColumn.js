@@ -23,26 +23,99 @@ class TodoColumn extends Component {
 	}
 
 	setEvent() {
-		let handleMouseMove = null;
-		let todoCard = null;
+		this.addEvent('mouseover', '.card-close-btn', (e) => {
+			const targetCard = e.target.closest('.todo-card');
+
+			targetCard.classList.add('warning');
+		});
+
+		this.addEvent('mouseout', '.card-close-btn', (e) => {
+			const targetCard = e.target.closest('.todo-card');
+
+			targetCard.classList.remove('warning');
+		});
 
 		this.addEvent('mousedown', '.column', (e) => {
 			if (e.detail !== 1) return;
 
-			todoCard = e.target.closest('.todo-card');
+			const todoCard = e.target.closest('.todo-card');
 
 			if (!todoCard || e.target.tagName === 'BUTTON') {
 				return;
 			}
 
-			handleMouseMove = onMouseMove(todoCard);
+			const handleMouseMove = onMouseMove(todoCard);
 
 			document.addEventListener('mousemove', handleMouseMove);
+
 			document.addEventListener(
 				'mouseup',
 				(e) => {
-					todoCard.classList.remove('dragging');
+					todoCard.classList.remove('afterimage');
 					document.removeEventListener('mousemove', handleMouseMove);
+
+					const ghost = document.querySelector('.ghost');
+					const subTarget = document.querySelector('.subTarget');
+
+					if (ghost && subTarget) {
+						const DIV = document.createElement('div');
+						DIV.classList.add('card-pocket');
+						const UL = todoCard.parentNode;
+						const belowNode = [];
+						UL.insertBefore(DIV, todoCard.nextElementSibling);
+						let flag = false;
+
+						todoCard.classList.add('fade');
+
+						todoCard.parentNode.childNodes.forEach((item) => {
+							if (item.tagName === 'DIV') return;
+
+							flag && belowNode.push(item);
+
+							if (item.classList.contains('fade')) {
+								flag = true;
+							}
+						});
+
+						belowNode.forEach((node) => DIV.appendChild(node));
+
+						DIV.style.transform = `translateY(-${todoCard.offsetHeight}px)`;
+
+						document.body.style.pointerEvents = 'none';
+						const xDiff =
+							ghost.getBoundingClientRect().x -
+							subTarget.getBoundingClientRect().x;
+						const yDiff =
+							ghost.getBoundingClientRect().y -
+							subTarget.getBoundingClientRect().y;
+
+						ghost.style.transform = `translate(${xDiff * -1}px, ${
+							yDiff * -1
+						}px)`;
+
+						setTimeout(() => {
+							const nodeList = [];
+							DIV.childNodes.forEach((node) => {
+								nodeList.push(node);
+							});
+
+							nodeList.forEach((node) =>
+								UL.insertBefore(node, UL.querySelector('.card-pocket'))
+							);
+
+							DIV.parentNode.removeChild(DIV);
+
+							document.body.removeAttribute('style');
+
+							if (!mouseUp(e)) {
+								return;
+							}
+
+							todoCard.parentNode.removeChild(todoCard);
+						}, 500);
+
+						return;
+					}
 
 					if (!mouseUp(e)) {
 						return;

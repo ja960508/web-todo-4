@@ -1,4 +1,5 @@
 let ghost;
+let subTarget;
 
 export function moveAt(target, pageX, pageY) {
 	target.style.left = pageX - target.offsetWidth / 2 + 'px';
@@ -7,11 +8,14 @@ export function moveAt(target, pageX, pageY) {
 
 export function onMouseMove(target) {
 	ghost = target.cloneNode(true);
+	ghost.classList.add('ghost');
+	subTarget = target.cloneNode(true);
+	subTarget.classList.add('afterimage', 'subTarget');
 	document.body.appendChild(ghost);
 	ghost.style.display = 'none';
 
 	return (event) => {
-		target.classList.add('dragging');
+		target.classList.add('afterimage');
 
 		ghost.style.position = 'absolute';
 		ghost.style.display = 'list-item';
@@ -20,9 +24,42 @@ export function onMouseMove(target) {
 		ghost.style.zIndex = window.getComputedStyle(target).height;
 
 		moveAt(ghost, event.pageX, event.pageY);
+
+		let [belowCard, todoList] = getPosition(event);
+
+		if (!todoList) {
+			subTarget.parentNode?.removeChild(subTarget);
+			return;
+		}
+
+		if (belowCard?.classList.contains('afterimage')) {
+			return;
+		}
+
+		if (!belowCard) {
+			todoList.appendChild(subTarget);
+
+			return;
+		}
+
+		if (dropPointIsUpper(belowCard, event.clientY)) {
+			todoList.insertBefore(subTarget, belowCard);
+		} else {
+			todoList.insertBefore(subTarget, belowCard.nextElementSibling);
+		}
+
+		if (
+			subTarget.previousElementSibling?.classList.contains('afterimage') ||
+			subTarget.nextElementSibling?.classList.contains('afterimage')
+		) {
+			subTarget.parentNode.removeChild(subTarget);
+
+			return;
+		}
 	};
 }
-export function mouseUp(e) {
+
+function getPosition(e) {
 	let belowCard;
 
 	ghost.style.display = 'none';
@@ -31,37 +68,48 @@ export function mouseUp(e) {
 
 	let todoList = getTodoList(elemBelow);
 
-	console.log(todoList);
+	if (!todoList) {
+		return [belowCard, todoList];
+	}
+
+	if (elemBelow.closest('.todo-card')) {
+		belowCard = elemBelow.closest('.todo-card');
+	} else {
+		belowCard = getClosestCardElement(todoList.childNodes, e.clientY);
+	}
+
+	return [belowCard, todoList];
+}
+
+export function mouseUp(e) {
+	let [belowCard, todoList] = getPosition(e);
+
 	if (!todoList) {
 		document.body.removeChild(ghost);
 
 		return false;
 	}
 
-	if (elemBelow.classList.contains('column')) {
-		belowCard = getClosestCardElement(todoList.childNodes, e.clientY);
-	} else {
-		belowCard = elemBelow.closest('.todo-card');
-	}
-
 	ghost.removeAttribute('style');
 
-	if (!belowCard) {
-		todoList.appendChild(ghost);
+	ghost.parentNode.removeChild(ghost);
+	ghost = null;
 
-		return true;
+	if (!subTarget.parentNode) {
+		return false;
 	}
 
-	if (dropPointIsUpper(belowCard, e.clientY)) {
-		todoList.insertBefore(ghost, belowCard);
-	} else {
-		todoList.insertBefore(ghost, belowCard.nextElementSibling);
-	}
+	subTarget.classList.remove('afterimage');
+	subTarget.classList.remove('subTarget');
+	subTarget = null;
 
 	return true;
 }
 
 function getTodoList(elemBelow) {
+	if (!elemBelow) {
+		return null;
+	}
 	if (elemBelow.closest('.column ul')) {
 		return elemBelow.closest('.column ul');
 	}
