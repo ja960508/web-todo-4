@@ -1,9 +1,15 @@
 class Component {
-	constructor(tag, $parent, props = {}) {
+	constructor(tag, $parent, props = {}, beforeElem = '') {
 		this.$target = document.createElement(tag);
 
 		if (props.class) {
 			this.$target.classList.add(...props.class);
+		}
+
+		if (props.dataset) {
+			for (const [key, value] of Object.entries(props.dataset)) {
+				this.$target.dataset[key] = value;
+			}
 		}
 
 		this.props = props;
@@ -12,7 +18,14 @@ class Component {
 		this.setEvent(); // constructor 에서 딱 한번만 실행.
 		this.render();
 
-		$parent.appendChild(this.$target);
+		if (!beforeElem) {
+			$parent.appendChild(this.$target);
+		} else if (typeof beforeElem === 'string') {
+			console.log($parent.querySelector(beforeElem));
+			$parent.insertBefore(this.$target, $parent.querySelector(beforeElem));
+		} else {
+			$parent.insertBefore(this.$target, beforeElem);
+		}
 	}
 
 	clearChildren() {
@@ -56,4 +69,5 @@ class Component {
 		});
 	}
 }
+
 export default Component;
