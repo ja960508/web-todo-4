@@ -4,7 +4,7 @@ import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
 import Modal from './modal';
-import { addTodo, editTodo, removeTodo } from '../../api/todos';
+import { addTodo, editTodo, removeTodo, updateTodo } from '../../api/todos';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -37,9 +37,28 @@ class TodoContainer extends Component {
 					columnId: key,
 				},
 				columnData: this.state.columnData[key],
+				onDragEnd: this.setDragAndDropState,
 			});
 		}
 	}
+
+	setDragAndDropState = (todoId, prevColumnId, nextColumnId) => {
+		updateTodo().then(() => {
+			const todoIndex = this.state.columnData[prevColumnId].todos.findIndex(
+				(todo) => todo.id === todoId
+			);
+			const todo = this.state.columnData[prevColumnId].todos[todoIndex];
+			const prevColumn = this.state.columnData[prevColumnId].todos.filter(
+				(todo) => {
+					return todo.id !== todoId;
+				}
+			);
+			const nextColumn = this.state.columnData[nextColumnId].todos.push(todo);
+			this.state.columnData[prevColumnId].todos = prevColumn;
+
+			this.setState({ ...this.state });
+		});
+	};
 
 	setEvent() {
 		this.addEvent('click', '.column', (e) => {
@@ -107,7 +126,11 @@ class TodoContainer extends Component {
 		this.handleTodoCard['confirmAddTodo']({
 			$parent,
 			$beforeElement: $todoAddForm,
-			props: { todo, todoId: $todoAddForm.dataset.todoId },
+			props: {
+				todo,
+				todoId: $todoAddForm.dataset.todoId,
+				index: $todoAddForm.dataset.todoId,
+			},
 		});
 	}
 
@@ -118,6 +141,7 @@ class TodoContainer extends Component {
 			content: $beforeElement.querySelector('.card-content').innerText,
 			dataset: {
 				todoId: $beforeElement.dataset.todoId,
+				index: $beforeElement.dataset.index,
 				type: 'edit',
 			},
 		};
@@ -162,6 +186,7 @@ class TodoContainer extends Component {
 	createTodoCard = ({ $parent, props = {}, $beforeElement }) => {
 		const classList = [...(props.class || []), 'todo-card'];
 		const todoId = props.todoId;
+		const index = props.index;
 
 		if (todoId) {
 			// todoId가 있을 때
@@ -183,6 +208,7 @@ class TodoContainer extends Component {
 					title: props.todo.title,
 					content: props.todo.content,
 					columnId,
+					index,
 				};
 
 				let target = this.state.columnData[columnId].todos.findIndex(
@@ -211,10 +237,11 @@ class TodoContainer extends Component {
 					.closest('.column').dataset.columnId;
 
 				const todo = {
-					id: todoId,
+					id: id,
 					title: props.todo.title,
 					content: props.todo.content,
 					columnId,
+					index: this.state.columnData[columnId].todos.length,
 				};
 
 				this.state.columnData[columnId].todos.push(todo);
@@ -239,11 +266,24 @@ class TodoContainer extends Component {
 			const todoId = $todoCard.dataset.todoId;
 
 			removeTodo(todoId).then(() => {
+				let index = -1;
 				this.state.columnData[columnId].todos = this.state.columnData[
 					columnId
-				].todos.filter((todo) => {
-					return todo.id !== todoId;
-				});
+				].todos
+					.filter((todo) => {
+						if (todo.id === todoId) {
+							index = todo.index;
+						}
+
+						return todo.id !== todoId;
+					})
+					.map((todo) => {
+						if (index < todo.index) {
+							todo.index -= 1;
+						}
+
+						return todo;
+					});
 
 				this.setState({ ...this.state });
 			});

@@ -14,7 +14,7 @@ class TodoList extends Component {
 				new TodoCard('li', this.$target, {
 					class: ['todo-card'],
 					todo,
-					dataset: { todoId: todo.id },
+					dataset: { todoId: todo.id, index: todo.index },
 				})
 		);
 	}

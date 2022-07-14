@@ -81,7 +81,7 @@ function getPosition(e) {
 	return [belowCard, todoList];
 }
 
-export function mouseUp(e) {
+export function mouseUp(e, prevColumnId = -1) {
 	let [belowCard, todoList] = getPosition(e);
 
 	if (!todoList) {
@@ -101,9 +101,29 @@ export function mouseUp(e) {
 
 	subTarget.classList.remove('afterimage');
 	subTarget.classList.remove('subTarget');
+
+	const index = getIndex(subTarget, prevColumnId);
+	const nextTodoList = subTarget.closest('.todo-list');
+	subTarget.dataset.index = index;
+
 	subTarget = null;
 
-	return true;
+	return [String(index), nextTodoList];
+}
+
+function getIndex(subTarget, prevColumnId) {
+	const currentColumnId = subTarget.closest('.column').dataset.columnId;
+
+	let result = subTarget.nextElementSibling?.dataset.index;
+
+	if (!result) {
+		result =
+			currentColumnId === prevColumnId
+				? subTarget.parentNode.childNodes.length - 2
+				: subTarget.parentNode.childNodes.length - 1;
+	}
+
+	return result;
 }
 
 function getTodoList(elemBelow) {
