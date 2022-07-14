@@ -37,3 +37,12 @@ function getClosestCardElement(todoList, dropYPoint) {
 
 	return closestCard.element;
 }
+
+function dropPointIsUpper(belowCard, currentY) {
+	const box = belowCard.getBoundingClientRect();
+	const boxMidPoint = box.top + box.height / 2;
+
+	const offset = currentY - boxMidPoint;
+
+	return offset < 0;
+}
