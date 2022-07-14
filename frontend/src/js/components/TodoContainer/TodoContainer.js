@@ -4,6 +4,7 @@ import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
 import Modal from './modal';
+import { addTodo, editTodo } from '../../api/todos';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -33,7 +34,7 @@ class TodoContainer extends Component {
 			this.columns[key] = new TodoColumn('div', this.$target, {
 				class: ['column'],
 				dataset: {
-					columnKey: key,
+					columnId: key,
 				},
 				columnData: this.state.columnData[key],
 			});
@@ -106,10 +107,8 @@ class TodoContainer extends Component {
 		this.handleTodoCard['confirmAddTodo']({
 			$parent,
 			$beforeElement: $todoAddForm,
-			props: { todo },
+			props: { todo, todoId: $todoAddForm.dataset.todoId },
 		});
-		this.removePrevCard();
-		this.removeAddForm();
 	}
 
 	editStart($beforeElement) {
@@ -118,6 +117,7 @@ class TodoContainer extends Component {
 			title: $beforeElement.querySelector('h4').innerText,
 			content: $beforeElement.querySelector('.card-content').innerText,
 			dataset: {
+				todoId: $beforeElement.dataset.todoId,
 				type: 'edit',
 			},
 		};
@@ -159,15 +159,40 @@ class TodoContainer extends Component {
 		);
 	}
 
-	createTodoCard({ $parent, props = {}, $beforeElement }) {
+	createTodoCard = ({ $parent, props = {}, $beforeElement }) => {
 		const classList = [...(props.class || []), 'todo-card'];
-		return new TodoCard(
-			'li',
-			$parent,
-			{ ...props, class: classList },
-			$beforeElement
-		);
-	}
+		const todoId = props.todoId;
+
+		if (todoId) {
+			// todoId가 있을 때
+			// edit
+			editTodo().then(() => {
+				new TodoCard(
+					'li',
+					$parent,
+					{ ...props, class: classList, dataset: { todoId } },
+					$beforeElement
+				);
+
+				this.removePrevCard();
+				this.removeAddForm();
+			});
+		} else {
+			// todoId가 없을 때
+			// add
+			addTodo().then((id) => {
+				new TodoCard(
+					'li',
+					$parent,
+					{ ...props, class: classList, dataset: { todoId: id } },
+					$beforeElement
+				);
+
+				this.removePrevCard();
+				this.removeAddForm();
+			});
+		}
+	};
 
 	handleTodoCard = {
 		editStart: this.createAddForm,

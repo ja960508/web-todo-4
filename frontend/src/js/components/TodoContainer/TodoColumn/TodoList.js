@@ -10,7 +10,12 @@ class TodoList extends Component {
 		const { todos } = this.props;
 
 		todos.forEach(
-			(todo) => new TodoCard('li', this.$target, { class: ['todo-card'], todo })
+			(todo) =>
+				new TodoCard('li', this.$target, {
+					class: ['todo-card'],
+					todo,
+					dataset: { todoId: todo.id },
+				})
 		);
 	}
 }
