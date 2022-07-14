@@ -23,6 +23,18 @@ class TodoColumn extends Component {
 	}
 
 	setEvent() {
+		this.addEvent('mouseover', '.card-close-btn', (e) => {
+			const targetCard = e.target.closest('.todo-card');
+
+			targetCard.classList.add('warning');
+		});
+
+		this.addEvent('mouseout', '.card-close-btn', (e) => {
+			const targetCard = e.target.closest('.todo-card');
+
+			targetCard.classList.remove('warning');
+		});
+
 		this.addEvent('mousedown', '.column', (e) => {
 			if (e.detail !== 1) return;
 
