@@ -9,7 +9,7 @@ export function onMouseMove(target) {
 	};
 }
 export function mouseUp(e) {
-	const ghost = e.target;
+	const ghost = e.target.closest('li');
 
 	let belowCard;
 
