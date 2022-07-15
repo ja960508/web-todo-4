@@ -53,10 +53,11 @@ class TodoContainer extends Component {
 					return todo.id !== todoId;
 				}
 			);
-			const nextColumn = this.state.columnData[nextColumnId].todos.push(todo);
-			this.state.columnData[prevColumnId].todos = prevColumn;
 
-			this.setState({ ...this.state });
+			this.state.columnData[prevColumnId].todos = prevColumn;
+			this.state.columnData[nextColumnId].todos.push(todo);
+
+			// this.setState({ ...this.state });
 		});
 	};
 

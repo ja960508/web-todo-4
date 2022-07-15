@@ -150,7 +150,6 @@ class TodoColumn extends Component {
 					if (!mouseUp(e)[0]) {
 						return;
 					}
-					console.log('??');
 
 					todoCard.parentNode.removeChild(todoCard);
 				},
