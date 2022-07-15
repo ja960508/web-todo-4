@@ -1,42 +1,64 @@
 let ghost;
 let subTarget;
 
+function mouseMoveInit(target) {
+	ghost = target.cloneNode(true);
+	ghost.classList.add('ghost');
+	subTarget = target.cloneNode(true);
+	subTarget.classList.add('afterimage', 'subTarget');
+	document.body.appendChild(ghost);
+
+	ghost.style.display = 'none';
+}
+
+function setGhostToMouseCursor(event, target) {
+	ghost.style.position = 'absolute';
+	ghost.style.display = 'list-item';
+	ghost.style.zIndex = 1000;
+	ghost.style.width = window.getComputedStyle(target).width;
+	ghost.style.zIndex = window.getComputedStyle(target).height;
+
+	moveAt(ghost, event.pageX, event.pageY);
+}
+
+function isCurrentCard(belowCard) {
+	return belowCard?.classList.contains('afterimage');
+}
+
+function isCurrentPosition() {
+	return (
+		subTarget.previousElementSibling?.classList.contains('afterimage') ||
+		subTarget.nextElementSibling?.classList.contains('afterimage')
+	);
+}
+
 export function moveAt(target, pageX, pageY) {
 	target.style.left = pageX - target.offsetWidth / 2 + 'px';
 	target.style.top = pageY - target.offsetHeight / 2 + 'px';
 }
 
 export function onMouseMove(target) {
-	ghost = target.cloneNode(true);
-	ghost.classList.add('ghost');
-	subTarget = target.cloneNode(true);
-	subTarget.classList.add('afterimage', 'subTarget');
-	document.body.appendChild(ghost);
-	ghost.style.display = 'none';
+	mouseMoveInit(target);
 
 	return (event) => {
 		target.classList.add('afterimage');
-
-		ghost.style.position = 'absolute';
-		ghost.style.display = 'list-item';
-		ghost.style.zIndex = 1000;
-		ghost.style.width = window.getComputedStyle(target).width;
-		ghost.style.zIndex = window.getComputedStyle(target).height;
-
-		moveAt(ghost, event.pageX, event.pageY);
+		setGhostToMouseCursor(event, target);
 
 		let [belowCard, todoList] = getPosition(event);
 
 		if (!todoList) {
+			// 잘못된 위치에 드랍됐을 때
 			subTarget.parentNode?.removeChild(subTarget);
+
 			return;
 		}
 
-		if (belowCard?.classList.contains('afterimage')) {
+		if (isCurrentCard(belowCard)) {
 			return;
 		}
 
 		if (!belowCard) {
+			// 잘못된 list가 비었을 때
 			todoList.appendChild(subTarget);
 
 			return;
@@ -48,10 +70,7 @@ export function onMouseMove(target) {
 			todoList.insertBefore(subTarget, belowCard.nextElementSibling);
 		}
 
-		if (
-			subTarget.previousElementSibling?.classList.contains('afterimage') ||
-			subTarget.nextElementSibling?.classList.contains('afterimage')
-		) {
+		if (isCurrentPosition()) {
 			subTarget.parentNode.removeChild(subTarget);
 
 			return;
@@ -82,7 +101,7 @@ function getPosition(e) {
 }
 
 export function mouseUp(e, prevColumnId = -1) {
-	let [belowCard, todoList] = getPosition(e);
+	let [_, todoList] = getPosition(e);
 
 	if (!todoList) {
 		document.body.removeChild(ghost);
@@ -91,7 +110,6 @@ export function mouseUp(e, prevColumnId = -1) {
 	}
 
 	ghost.removeAttribute('style');
-
 	ghost.parentNode.removeChild(ghost);
 	ghost = null;
 
@@ -99,13 +117,12 @@ export function mouseUp(e, prevColumnId = -1) {
 		return false;
 	}
 
-	subTarget.classList.remove('afterimage');
-	subTarget.classList.remove('subTarget');
-
 	const index = getIndex(subTarget, prevColumnId);
 	const nextTodoList = subTarget.closest('.todo-list');
 	subTarget.dataset.index = index;
 
+	subTarget.classList.remove('afterimage');
+	subTarget.classList.remove('subTarget');
 	subTarget = null;
 
 	return [String(index), nextTodoList];

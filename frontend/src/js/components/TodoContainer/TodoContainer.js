@@ -238,7 +238,7 @@ class TodoContainer extends Component {
 					.closest('.column').dataset.columnId;
 
 				const todo = {
-					id: id,
+					id: String(id),
 					title: props.todo.title,
 					content: props.todo.content,
 					columnId,

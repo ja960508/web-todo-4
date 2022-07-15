@@ -2,6 +2,11 @@ import Component from '../../../core/Component';
 import TodoColumnHeader from './TodoColumnHeader';
 import TodoList from './TodoList';
 import { mouseUp, onMouseMove } from '../../../events/todoDragEvent';
+import {
+	calcPositionDiff,
+	pullUpBelowCards,
+	restoreBelowCards,
+} from '../../../events/temp';
 
 class TodoColumn extends Component {
 	constructor(...data) {
@@ -61,67 +66,28 @@ class TodoColumn extends Component {
 						const prevColumnId = todoCard.closest('.column').dataset.columnId;
 						const currentTodoId = todoCard.dataset.todoId;
 
-						const DIV = document.createElement('div');
-						const UL = todoCard.parentNode;
-						const belowNode = [];
-						let flag = false;
-
-						DIV.classList.add('card-pocket');
-						UL.insertBefore(DIV, todoCard.nextElementSibling);
-
-						todoCard.classList.add('fade');
-
-						todoCard.parentNode.childNodes.forEach((item) => {
-							if (item.tagName === 'DIV') return;
-
-							flag && belowNode.push(item);
-
-							if (item.classList.contains('fade')) {
-								flag = true;
-							}
-						});
-
-						belowNode.forEach((node) => DIV.appendChild(node));
-
-						DIV.style.transform = `translateY(-${todoCard.offsetHeight}px)`;
+						const [DIV, UL] = pullUpBelowCards(todoCard);
 
 						document.body.style.pointerEvents = 'none';
-						const xDiff =
-							ghost.getBoundingClientRect().x -
-							subTarget.getBoundingClientRect().x;
-						const yDiff =
-							ghost.getBoundingClientRect().y -
-							subTarget.getBoundingClientRect().y;
+
+						const [xDiff, yDiff] = calcPositionDiff(ghost, subTarget);
 
 						ghost.style.transform = `translate(${xDiff * -1}px, ${
 							yDiff * -1
 						}px)`;
 
 						setTimeout(() => {
-							const nodeList = [];
 							let index;
 							let nextTodoList;
-							DIV.childNodes.forEach((node) => {
-								nodeList.push(node);
-							});
-
-							nodeList.forEach((node) =>
-								UL.insertBefore(node, UL.querySelector('.card-pocket'))
-							);
-
-							DIV.parentNode.removeChild(DIV);
+							restoreBelowCards(DIV, UL);
 
 							document.body.removeAttribute('style');
 
 							[index, nextTodoList] = mouseUp(e, prevColumnId);
 
-							if (!index) {
-								return;
-							}
-
 							nextTodoList.childNodes.forEach((node) => {
 								if (index < node.dataset.index) {
-									node.dataset.index = String(Number(node.dataset.index) + 1);
+									node.dataset.index = Number(node.dataset.index) + 1;
 								}
 
 								if (node.dataset.index === index) {
