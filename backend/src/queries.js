@@ -1,170 +1,290 @@
-import {
-    columnData,
-    logData,
-    removeDataAtDB,
-    todoData,
-    userData,
-} from "../mock/mock.js";
+import {handleDB} from "./handleDB/read.js";
 
-function getUserFromDB({userId}) {
-    return userData[userId];
+function getUserFromDB({userId, callback: parentCallback}) {
+    const query = `Select *
+                   FROM USER_TB
+                   WHERE id = ${userId}`;
+
+    const callback = (results) => {
+        parentCallback(results[0]);
+    }
+    handleDB({callback, query});
 }
 
-function readLogFromDB({userId}) {
-    return logData.filter((log) => log.userId === userId);
+function readLogFromDB({userId, callback: parentCallback}) {
+    const query = `Select *
+                   FROM LOG_TB
+                   WHERE userId = ${userId}`;
+
+    const callback = (results) => {
+        console.log('results', results);
+        parentCallback(results);
+    }
+    handleDB({callback, query});
 }
 
-function insertLogFromDB({
-    userId,
-    type,
-    todoTitle,
-    todoColumnId,
-    textTodoColumnId,
-}) {
-    logData.push({
-        id: logData.length + 1,
+function insertLogFromDB(
+    {
         userId,
         type,
         todoTitle,
         todoColumnId,
-        textTodoColumnId,
-        date: new Date(),
-    });
+        nextTodoColumnId,
+    }
+) {
+
+    const query = 'INSERT INTO LOG_TB(userId, type, todoTitle, todoColumnId, nextTodoColumnId) VALUES (?, ?, ?, ?, ?)';
+    const queryData = [userId, type, todoTitle, todoColumnId, nextTodoColumnId];
+    const callback = () => {
+    };
+    handleDB({callback, query, queryData});
 }
 
 // targetTodo: { title, content }
-function insertTodoFromDB({todoColumnId, targetTodo, userId}) {
-    // 먼저 있던 todo 들의 index를 하나씩 늘려준다
-    todoData
-        .filter((todo) => todo.todoColumnId === todoColumnId)
-        .forEach((todo) => todo.index++);
-    const todoId = todoData.length;
-    targetTodo = {...targetTodo, id: todoId, index: 0, todoColumnId};
-    todoData.push(targetTodo);
+function insertTodoFromDB({todoColumnId, targetTodo, userId, callback: parentCallback}) {
 
-    /********** 로그 기록 **********/
-    insertLogFromDB({
-        userId,
-        type: "add",
-        todoTitle: targetTodo.title,
-        todoColumnId,
-        nextTodoColumnId: null,
-    });
-    console.log(logData.at(-1));
-    /***************************/
+    const insertQuery = 'INSERT INTO TODO_TB(title, content, todoColumnId, idx, userId) VALUES (?, ?, ?, ?, ?)';
+    const queryData = [targetTodo.title, targetTodo.content, todoColumnId, 0, userId];
 
-    // 프론트에서 쓸 수 있는 key 값을 return 해준다.
-    return todoId;
+    const callbackAfterInsert = (result) => {
+        const newTodoId = result.insertId;
+        if (!newTodoId) {
+            return parentCallback(false);
+        }
+
+        const ascIdxQuery = `UPDATE TODO_TB
+                             SET idx = idx + 1
+                             WHERE id != ${newTodoId}
+                               and todoColumnId = ${todoColumnId}
+                               and idx >= 0`
+        const callbackAfterAscIdx = (result) => {
+            if (!result.affectedRows) {
+                return parentCallback(false);
+            }
+
+            /********** 로그 기록 **********/
+            insertLogFromDB({
+                userId,
+                type: "add",
+                todoTitle: targetTodo.title,
+                todoColumnId,
+                nextTodoColumnId: null,
+            });
+            /***************************/
+            parentCallback(newTodoId);
+        }
+        handleDB({callback: callbackAfterAscIdx, query: ascIdxQuery});
+    }
+    handleDB({callback: callbackAfterInsert, query: insertQuery, queryData});
+
 }
 
-function removeTodoFromDB({todoId, userId}) {
-    const removedTodo = todoData.find((todo) => todo.id === todoId);
-    removeDataAtDB(todoId);
+function removeTodoFromDB({todoId, userId, callback: parentCallback}) {
 
-    /********** 로그 기록 **********/
-    insertLogFromDB({
-        userId,
-        type: "remove",
-        todoTitle: removedTodo.title,
-        todoColumnId: removedTodo.todoColumnId,
-        nextTodoColumnId: null,
-    });
-    console.log(logData.at(-1));
-    /***************************/
+    const findTodoQuery = `Select *
+                           FROM TODO_TB
+                           WHERE id = ${todoId}`;
 
-    return removedTodo;
+    const callbackAfterFindTodo = (targetTodo) => {
+        if (!targetTodo || !targetTodo.length) {
+            return parentCallback(false);
+        }
+        targetTodo = targetTodo[0];
+        const deleteQuery = `DELETE
+                             FROM TODO_TB
+                             WHERE id = ${todoId}`;
+        const callbackAfterDelete = (result) => {
+            if (!result.affectedRows) {
+                return parentCallback(false);
+            }
+            const descIdxQuery = `UPDATE TODO_TB
+                                  SET idx = idx - 1
+                                  WHERE todoColumnId = ${targetTodo.todoColumnId}
+                                    and idx >= ${targetTodo.idx}`
+            const callback = (result) => {
+                if (!result.affectedRows) {
+                    return parentCallback(false);
+                }
+                /********** 로그 기록 **********/
+                insertLogFromDB({
+                    userId,
+                    type: "remove",
+                    todoTitle: targetTodo.title,
+                    todoColumnId: targetTodo.todoColumnId,
+                    nextTodoColumnId: null,
+                });
+                /***************************/
+                parentCallback(true);
+            };
+            handleDB({callback, query: descIdxQuery});
+        }
+        handleDB({callback: callbackAfterDelete, query: deleteQuery});
+    }
+    handleDB({callback: callbackAfterFindTodo, query: findTodoQuery});
 }
 
-function moveTodoFromDB({todoId, nextTodoColumnId, userId, nextIndex}) {
-    const target = todoData.find((todo) => todo.id === todoId);
-    const originIndex = target.index;
-    const originTodoColumnId = target.todoColumnId;
-    todoData.filter(todo => todo.todoColumnId === originTodoColumnId && todo.index > target.index)
-        .forEach(todo => todo.index--);
-    todoData.filter(todo => todo.todoColumnId === nextTodoColumnId && todo.index >= nextIndex)
-        .forEach(todo => todo.index++);
-    target.todoColumnId = nextTodoColumnId;
-    target.index = nextIndex;
+function moveTodoFromDB({todoId, nextTodoColumnId, userId, nextIndex, callback: parentCallback}) {
 
-    /********** 로그 기록 **********/
-    insertLogFromDB({
-        userId,
-        type: "move",
-        todoTitle: target.title,
-        todoColumnId: originTodoColumnId,
-        nextTodoColumnId: nextTodoColumnId,
-    });
-    console.log(logData.at(-1));
-    /***************************/
+    const findTodoQuery = `Select *
+                           FROM TODO_TB
+                           WHERE id = ${todoId}`;
 
-    return target;
+    const callback = (todo) => {
+        if (!todo || !todo.length) return parentCallback(false);
+        todo = todo[0];
+        const moveQuery = `UPDATE TODO_TB
+                           SET todoColumnId=?,
+                               idx=?
+                           WHERE id = ?`
+
+        const moveQueryData = [nextTodoColumnId, nextIndex, todoId];
+
+        const callbackAfterMove = (result) => {
+            if (!result.affectedRows) {
+                return parentCallback(false);
+            }
+
+            const descIdxQuery = `UPDATE TODO_TB
+                                  SET idx = idx - 1
+                                  WHERE todoColumnId=?
+                                    and id != ?
+                                    and idx >= ?`
+            const descIdxQueryData = [todo.todoColumnId, todoId, todo.idx];
+            const ascIdxQuery = `UPDATE TODO_TB
+                                 SET idx = idx + 1
+                                 WHERE todoColumnId = ?
+                                   and id != ?
+                                   and idx >= ?`
+            const ascIdxQueryData = [nextTodoColumnId, todoId, nextIndex];
+
+            const callbackAfterDescIdx = (result) => {
+                if (!result.affectedRows) {
+                    return parentCallback(false);
+                }
+            };
+
+            const callbackAfterAscIdx = (result) => {
+                if (!result.affectedRows) {
+                    return parentCallback(false);
+                }
+                /********** 로그 기록 **********/
+                insertLogFromDB({
+                    userId,
+                    type: "move",
+                    todoTitle: todo.title,
+                    todoColumnId: todo.todoColumnId,
+                    nextTodoColumnId: nextTodoColumnId,
+                });
+                /***************************/
+                parentCallback(true);
+            }
+
+            handleDB({callback: callbackAfterDescIdx, query: descIdxQuery, queryData: descIdxQueryData});
+            handleDB({callback: callbackAfterAscIdx, query: ascIdxQuery, queryData: ascIdxQueryData});
+        }
+
+        handleDB({callback: callbackAfterMove, query: moveQuery, queryData: moveQueryData});
+
+    }
+
+    handleDB({callback, query: findTodoQuery});
 }
 
-function updateTodoFromDB({todoId, targetTodo, userId}) {
-    const curTodo = todoData.find((todo) => todo.id === todoId);
-    const originTitle = curTodo.title;
-    Object.keys(targetTodo)
-        .forEach((key) => (
-            curTodo[key] = targetTodo[key]
-        ));
+function updateTodoFromDB({todoId, targetTodo, userId, callback: parentCallback}) {
 
-    /********** 로그 기록 **********/
-    insertLogFromDB({
-        userId,
-        type: "update",
-        todoTitle: originTitle,
-        todoColumnId: curTodo.todoColumnId,
-        nextTodoColumnId: null,
-    });
-    console.log(logData.at(-1));
-    /***************************/
+    const findQuery = `Select *
+                       FROM TODO_TB
+                       WHERE id = ${todoId}`;
 
-    return curTodo;
+    const callbackAfterFindTodo = (todo) => {
+        if (!todo || !todo.length) {
+            return parentCallback(false);
+        }
+
+        const updateQuery = `UPDATE TODO_TB
+                             SET title=?,
+                                 content=?
+                             WHERE id = ?`;
+
+        const updateQueryData = [targetTodo.title, targetTodo.content, todoId];
+
+        const callback = (result) => {
+            if (!result.affectedRows) {
+                return parentCallback(false);
+            }
+
+            /********** 로그 기록 **********/
+            insertLogFromDB({
+                userId,
+                type: "update",
+                todoTitle: todo.title,
+                todoColumnId: todo.todoColumnId,
+                nextTodoColumnId: null,
+            });
+            /***************************/
+
+            parentCallback(true);
+        }
+
+        handleDB({callback, query: updateQuery, queryData: updateQueryData});
+
+    }
+
+    handleDB({callback: callbackAfterFindTodo, query: findQuery});
+
 }
 
-function readTodoFromDB({userId}) {
-    const columnIds = getUsersColumnFromDB({userId})
-        .map(({id}) => id);
-    return todoData.filter((todo) => columnIds.includes(todo.todoColumnId));
+function readTodoFromDB({userId, callback: parentCallback}) {
+    const query = `Select *
+                   FROM TODO_TB
+                   WHERE userId = ${userId}`;
+    const callback = (columns) => {
+        parentCallback(columns);
+    }
+    handleDB({query, callback});
 }
 
-function insertColumnFromDB() {
+function updateColumnFromDB({todoColumnId, nextColumnTitle, callback: parentCallback}) {
+    const query = `Update COLUMN_TB
+                   SET title=?
+                   WHERE id = ?`;
+    const queryData = [nextColumnTitle, todoColumnId];
+    const callback = (result) => {
+        if (!result.affectedRows) {
+            return parentCallback(false);
+        }
+        parentCallback(true);
+    }
+    handleDB({callback, query, queryData});
 }
 
-function updateColumnFromDB({todoColumnId, nextColumnTitle}) {
-    const targetColumn = columnData.find((column) => column.id === todoColumnId);
-    targetColumn.title = nextColumnTitle;
-    return targetColumn;
+function isUsersColumn({todoColumnId, userId, callback: parentCallback}) {
+    const query = `Select *
+                   FROM COLUMN_TB
+                   WHERE id = ${todoColumnId}`;
+    const callback = (column) => {
+        if (!column || !column.length) {
+            parentCallback(false);
+        }
+        parentCallback(column[0].userId === userId);
+    }
+    handleDB({callback, query});
 }
 
-function deleteColumnFromDB() {
-}
-
-function readColumnFromDB({todoColumnId}) {
-    return columnData.find((column) => column.id === todoColumnId);
-}
-
-function isUsersColumn({todoColumnId, userId}) {
-    let tmp;
-    return (
-        (
-            tmp = columnData.find((column) => column.id === todoColumnId)
-        ) && tmp.userId === userId
-    );
-}
-
-function isUsersTodo({todoId, userId}) {
-    const targetTodo = todoData.find((todo) => todo.id === todoId);
-    const usersColumn = columnData.filter((column) => column.userId === userId);
-    return targetTodo && usersColumn.includes(targetTodo.todoColumnId);
-}
-
-function getUsersColumnFromDB({userId}) {
-    return columnData.filter((column) => column.userId === userId);
+function isUsersTodo({todoId, userId, callback: parentCallback}) {
+    const query = `Select *
+                   FROM TODO_TB
+                   WHERE id = ${todoId}`;
+    const callback = (todo) => {
+        if (!todo || !todo.length) {
+            parentCallback(false);
+        }
+        parentCallback(true);
+    }
+    handleDB({callback, query});
 }
 
 export {
-    getUsersColumnFromDB,
     isUsersTodo,
     isUsersColumn,
     getUserFromDB,
@@ -175,6 +295,5 @@ export {
     updateTodoFromDB,
     insertTodoFromDB,
     readTodoFromDB,
-    readColumnFromDB,
     updateColumnFromDB,
 };
