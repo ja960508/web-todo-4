@@ -4,8 +4,9 @@
 
 	.column {
 		flex: 1 1 300px;
-		border: 1px solid black;
+		height: 720px;
 		padding: 1rem;
+		overflow: auto;
 
 		header {
 			display: flex;

@@ -4,6 +4,7 @@ import TodoColumn from './TodoColumn/TodoColumn';
 import TodoAddForm from './TodoAddForm';
 import TodoCard from './TodoColumn/TodoCard';
 import Modal from './modal';
+import { addTodo, editTodo, removeTodo, updateTodo } from '../../api/todos';
 
 class TodoContainer extends Component {
 	constructor(...data) {
@@ -33,12 +34,32 @@ class TodoContainer extends Component {
 			this.columns[key] = new TodoColumn('div', this.$target, {
 				class: ['column'],
 				dataset: {
-					columnKey: key,
+					columnId: key,
 				},
 				columnData: this.state.columnData[key],
+				onDragEnd: this.setDragAndDropState,
 			});
 		}
 	}
+
+	setDragAndDropState = (todoId, prevColumnId, nextColumnId) => {
+		updateTodo().then(() => {
+			const todoIndex = this.state.columnData[prevColumnId].todos.findIndex(
+				(todo) => todo.id === todoId
+			);
+			const todo = this.state.columnData[prevColumnId].todos[todoIndex];
+			const prevColumn = this.state.columnData[prevColumnId].todos.filter(
+				(todo) => {
+					return todo.id !== todoId;
+				}
+			);
+
+			this.state.columnData[prevColumnId].todos = prevColumn;
+			this.state.columnData[nextColumnId].todos.push(todo);
+
+			// this.setState({ ...this.state });
+		});
+	};
 
 	setEvent() {
 		this.addEvent('click', '.column', (e) => {
@@ -106,10 +127,12 @@ class TodoContainer extends Component {
 		this.handleTodoCard['confirmAddTodo']({
 			$parent,
 			$beforeElement: $todoAddForm,
-			props: { todo },
+			props: {
+				todo,
+				todoId: $todoAddForm.dataset.todoId,
+				index: $todoAddForm.dataset.todoId,
+			},
 		});
-		this.removePrevCard();
-		this.removeAddForm();
 	}
 
 	editStart($beforeElement) {
@@ -118,6 +141,8 @@ class TodoContainer extends Component {
 			title: $beforeElement.querySelector('h4').innerText,
 			content: $beforeElement.querySelector('.card-content').innerText,
 			dataset: {
+				todoId: $beforeElement.dataset.todoId,
+				index: $beforeElement.dataset.index,
 				type: 'edit',
 			},
 		};
@@ -159,15 +184,75 @@ class TodoContainer extends Component {
 		);
 	}
 
-	createTodoCard({ $parent, props = {}, $beforeElement }) {
+	createTodoCard = ({ $parent, props = {}, $beforeElement }) => {
 		const classList = [...(props.class || []), 'todo-card'];
-		return new TodoCard(
-			'li',
-			$parent,
-			{ ...props, class: classList },
-			$beforeElement
-		);
-	}
+		const todoId = props.todoId;
+		const index = props.index;
+
+		if (todoId) {
+			// todoId가 있을 때
+			// edit
+			editTodo().then(() => {
+				const elem = new TodoCard(
+					'li',
+					$parent,
+					{ ...props, class: classList, dataset: { todoId } },
+					$beforeElement
+				);
+
+				const columnId = document
+					.querySelector(`[data-todo-id='${todoId}']`)
+					.closest('.column').dataset.columnId;
+
+				const todo = {
+					id: todoId,
+					title: props.todo.title,
+					content: props.todo.content,
+					columnId,
+					index,
+				};
+
+				let target = this.state.columnData[columnId].todos.findIndex(
+					(item) => item.id == todoId
+				);
+
+				this.state.columnData[columnId].todos[target] = { ...todo };
+				this.setState({ ...this.state });
+
+				this.removePrevCard();
+				this.removeAddForm();
+			});
+		} else {
+			// todoId가 없을 때
+			// add
+			addTodo().then((id) => {
+				new TodoCard(
+					'li',
+					$parent,
+					{ ...props, class: classList, dataset: { todoId: id } },
+					$beforeElement
+				);
+
+				const columnId = document
+					.querySelector(`[data-todo-id='${id}']`)
+					.closest('.column').dataset.columnId;
+
+				const todo = {
+					id: id,
+					title: props.todo.title,
+					content: props.todo.content,
+					columnId,
+					index: this.state.columnData[columnId].todos.length,
+				};
+
+				this.state.columnData[columnId].todos.push(todo);
+				this.setState({ ...this.state });
+
+				this.removePrevCard();
+				this.removeAddForm();
+			});
+		}
+	};
 
 	handleTodoCard = {
 		editStart: this.createAddForm,
@@ -178,8 +263,32 @@ class TodoContainer extends Component {
 
 	openModal($todoCard) {
 		const removeCard = () => {
-			console.log($todoCard.parentNode);
-			$todoCard.parentNode.removeChild($todoCard);
+			const columnId = $todoCard.closest('.column').dataset.columnId;
+			const todoId = $todoCard.dataset.todoId;
+
+			removeTodo(todoId).then(() => {
+				let index = -1;
+				this.state.columnData[columnId].todos = this.state.columnData[
+					columnId
+				].todos
+					.filter((todo) => {
+						if (todo.id === todoId) {
+							index = todo.index;
+						}
+
+						return todo.id !== todoId;
+					})
+					.map((todo) => {
+						if (index < todo.index) {
+							todo.index -= 1;
+						}
+
+						return todo;
+					});
+
+				this.setState({ ...this.state });
+			});
+
 			this.closeModal();
 		};
 
