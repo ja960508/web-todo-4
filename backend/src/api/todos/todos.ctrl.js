@@ -1,5 +1,5 @@
 import {
-    insertTodoFromDB,
+    insertTodoFromDB, isUsersColumn,
     isUsersTodo,
     moveTodoFromDB,
     readTodoFromDB,
@@ -38,10 +38,11 @@ export function checkUsersColumn(req, res, next) {
                 .json({result: "failed", message: "해당 유저의 Column이 아닙니다."});
         }
     }
-    isUsersTodo({userId, todoColumnId: todoColumnId ? todoColumnId : nextTodoColumnId, callback})
+    isUsersColumn({userId, todoColumnId: todoColumnId ? todoColumnId : nextTodoColumnId, callback})
 }
 
 export function insertTodo(req, res) {
+    const todoColumnId = req.body.todoColumnId;
     const targetTodo = {
         title: req.body.title,
         content: req.body.content,
@@ -108,7 +109,7 @@ export function readTodo(req, res) {
         const ret = {};
         todos.forEach((todo) => {
             if (!ret.hasOwnProperty(todo.todoColumnId)) ret[todo.todoColumnId] = [];
-            ret[id].push(todo);
+            ret[todo.todoColumnId].push(todo);
         });
         res.json(ret);
     }
@@ -128,6 +129,7 @@ export function moveTodo(req, res) {
         todoId: req.body.todoId,
         nextTodoColumnId: req.body.nextTodoColumnId,
         userId: getUserId(req),
+        nextIndex: req.body.nextIndex,
         callback,
     });
 }

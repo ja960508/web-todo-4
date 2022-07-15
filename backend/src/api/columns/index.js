@@ -5,6 +5,7 @@ import checkLoggedIn from "../../middleWare/checkLoggedIn.js";
 
 const router = express.Router();
 
+// userId, todoColumnId, nextColumnTitle
 router.patch("/", checkLoggedIn, checkUsersColumn, updateColumn);
 
 export default router;
