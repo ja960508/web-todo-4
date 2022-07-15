@@ -17,7 +17,6 @@ function readLogFromDB({userId, callback: parentCallback}) {
                    WHERE userId = ${userId}`;
 
     const callback = (results) => {
-        console.log('results', results);
         parentCallback(results);
     }
     handleDB({callback, query});

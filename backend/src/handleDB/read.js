@@ -7,7 +7,6 @@ function handleDB({callback, query, queryData}) {
             queryData,
             (err, results, fields) => {
                 if (err) return callback(false);
-                console.log('쿼리결과', results);
                 callback(results);
             }
         )
@@ -17,7 +16,6 @@ function handleDB({callback, query, queryData}) {
             query,
             (err, results, fields) => {
                 if (err) return callback(false);
-                console.log('쿼리결과', results);
                 callback(results);
             }
         )

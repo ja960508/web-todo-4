@@ -24,8 +24,6 @@ class TodoLogContainer extends Component {
 	setChildren() {
 		this.clearChildren();
 
-		console.log(this.state.logData);
-
 		this.state.logData &&
 			this.state.logData.forEach(
 				(item) =>

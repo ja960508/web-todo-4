@@ -8,6 +8,6 @@ export default async function request(url, option) {
 
 		return await response.json();
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 	}
 }
