@@ -21,7 +21,6 @@ class Component {
 		if (!beforeElem) {
 			$parent.appendChild(this.$target);
 		} else if (typeof beforeElem === 'string') {
-			console.log($parent.querySelector(beforeElem));
 			$parent.insertBefore(this.$target, $parent.querySelector(beforeElem));
 		} else {
 			$parent.insertBefore(this.$target, beforeElem);

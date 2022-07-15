@@ -2,7 +2,6 @@ import { getUserFromDB } from "../../queries.js";
 
 export function login(req, res) {
   const { userId } = req.body;
-  console.log('userId', userId);
   const callback = (user) => {
     if (user) {
       res.cookie("userId", userId);
